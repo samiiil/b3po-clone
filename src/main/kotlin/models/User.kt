@@ -1,6 +1,7 @@
 package models
 
 import exception.ValidationException
+import repo.UserRepo
 import services.Util
 import kotlin.math.roundToLong
 
@@ -15,28 +16,7 @@ class User(
     val orders: ArrayList<Order> = ArrayList()
 
 
-    fun addBuyOrder(orderQuantity: Long, orderPrice: Long){
-        throwExceptionIfInvalidBuyOrder(orderQuantity, orderPrice)
 
-        val transactionAmount = orderQuantity * orderPrice
-        moveFreeMoneyToLockedMoney(transactionAmount)
-        val newOrder = Order(username, Util.generateOrderId(), orderQuantity, orderPrice, "BUY")
-        orders.add(newOrder)
-        Util.addOrderToBuyList(newOrder)
-    }
-
-    fun throwExceptionIfInvalidBuyOrder(orderQuantity: Long, orderPrice: Long) {
-        val errorList = ArrayList<String>()
-        val transactionAmount = orderQuantity * orderPrice
-
-        if(getFreeInventory() + getLockedInventory() + orderQuantity > DataStorage.MAX_QUANTITY)
-            errorList.add("Inventory threshold will be exceeded")
-        if(getFreeMoney() < transactionAmount)
-            errorList.add("Insufficient balance in wallet")
-
-        if(errorList.isNotEmpty())
-            throw ValidationException(ErrorResponse(errorList))
-    }
 
     fun addSellOrder(orderQuantity: Long, orderPrice: Long, typeOfESOP: String){
         if(typeOfESOP == "PERFORMANCE")
@@ -220,4 +200,20 @@ class User(
         this.account.inventory.lockedPerformanceInventory = this.account.inventory.lockedPerformanceInventory + esopsToBeLocked
         return "Success"
     }
+
+    fun isInventoryWithInLimit(userName: String,orderQuantity:Long): Boolean {
+        val user= UserRepo.userList[userName]!!
+        return (user.getFreeInventory()+user.getLockedInventory()+orderQuantity<=DataStorage.MAX_QUANTITY)
+    }
+
+
+
+    fun getFreeMoney(userName: String): Long {
+        return UserRepo.userList[userName]!!.getFreeMoney()
+
+    }
+
+
+
+
 }

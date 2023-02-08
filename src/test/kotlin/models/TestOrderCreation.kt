@@ -31,7 +31,11 @@ class TestOrderCreation {
 
         user.addMoneyToWallet(100)
 
+
+
         OrderServices.placeOrder("user",1, "BUY", 100)
+
+
 
         assertEquals(1, user.orders.size)
     }
@@ -230,8 +234,6 @@ class TestOrderCreation {
         user.addMoneyToWallet(100)
 
         OrderServices.placeOrder("user",1, "BUY", 100)
-
-
 
         val orderDetails = user.getOrderDetails()
 

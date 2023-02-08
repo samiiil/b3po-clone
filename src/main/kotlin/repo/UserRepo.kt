@@ -1,5 +1,6 @@
 package repo
 
+import models.DataStorage
 import models.User
 import java.util.HashMap
 
@@ -12,15 +13,13 @@ class UserRepo {
     val registeredPhoneNumbers = mutableSetOf<String>()
 
         fun isUserExists(userName: String): Boolean {
-
             return (userList.containsKey(userName))
 
         }
-
-
         fun getUser(userName: String): User? {
             return userList[userName]
         }
+
     }
 
 }
