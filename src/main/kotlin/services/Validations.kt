@@ -150,8 +150,8 @@ class Validations {
             }
             val code=countryCode(phoneNumber)
             if(code.length==1 && code[0]!='0' ){
-                    errorList.add(PhoneNumber.TRUNK_ERROR_MESSAGE)
-                    return errorList
+                errorList.add(PhoneNumber.TRUNK_ERROR_MESSAGE)
+                return errorList
             }
             if(code.isNotEmpty() && !code.matches(Regex("\\+?\\d*"))){
                 errorList.add(PhoneNumber.COUNTRY_CODE_ERROR_MESSAGE)
@@ -165,9 +165,9 @@ class Validations {
         }
 
         private fun countryCode(phoneNumber: String): String {
-                if (phoneNumber.length == 10 || (phoneNumber.length==11 && phoneNumber[0]=='0'))
-                    return ""
-                return phoneNumber.subSequence(0,phoneNumber.length-10).toString()
+            if (phoneNumber.length == 10 || (phoneNumber.length==11 && phoneNumber[0]=='0'))
+                return ""
+            return phoneNumber.subSequence(0,phoneNumber.length-10).toString()
 
 
         }
