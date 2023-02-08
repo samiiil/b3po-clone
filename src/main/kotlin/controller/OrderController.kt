@@ -1,13 +1,12 @@
 package controller
 
-import services.OrderServices
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Post
 import models.CreateOrderInput
-
+import services.OrderServices
 import validations.RequestValidations
 import validations.UserValidations
 
@@ -30,7 +29,7 @@ class OrderController {
         val orderPrice: Long = body.price!!.toLong()
         val typeOfESOP: String = (body.esopType ?: "NON-PERFORMANCE").trim().uppercase()
 
-        response=OrderServices.placeOrder(userName,orderQuantity,orderType,orderPrice,typeOfESOP)
+        response = OrderServices.placeOrder(userName, orderQuantity, orderType, orderPrice, typeOfESOP)
 
         return HttpResponse.status<Any>(HttpStatus.OK).body(response)
     }

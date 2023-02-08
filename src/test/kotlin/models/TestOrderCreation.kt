@@ -108,7 +108,7 @@ class TestOrderCreation {
         val exception = assertThrows(ValidationException::class.java){   OrderServices.placeOrder("user",1, "SELL", 100) }
         val errors = exception.errorResponse.error
 
-        assertEquals("Insufficient non-performance ESOPs in inventory", errors[0])
+        assertEquals("Insufficient NON-PERFORMANCE ESOPs in inventory", errors[0])
         assertEquals(0, user.getFreeInventory())
         assertEquals(0, user.getLockedInventory())
     }
@@ -171,7 +171,7 @@ class TestOrderCreation {
         }
         val errors = exception.errorResponse.error
 
-        assertEquals("Insufficient performance ESOPs in inventory", errors[0])
+        assertEquals("Insufficient PERFORMANCE ESOPs in inventory", errors[0])
         assertEquals(0, user.getFreePerformanceInventory())
         assertEquals(0, user.getLockedPerformanceInventory())
     }
@@ -323,10 +323,12 @@ class TestOrderCreation {
         UserRepo.userList["user"]=user
         user.addMoneyToWallet(DataStorage.MAX_AMOUNT-10L)
         user.addEsopToInventory(1)
-
-        val exception = assertThrows(ValidationException::class.java){  OrderServices.placeOrder("user",1, "SELL", 15)
+        val exception = assertThrows(ValidationException::class.java) {
+            OrderServices.placeOrder("user",1, "SELL", 15)
         }
+
         val errors = exception.errorResponse.error
+
 
         assertEquals(1, errors.size)
         assertEquals("Wallet threshold will be exceeded", errors[0])

@@ -5,20 +5,22 @@ import models.Order
 import models.User
 import repo.UserRepo
 import services.Util
-import validations.OrderValidations.Companion.throwExceptionIfInvalidBuyOrder
-
+import validations.OrderValidations
 class OrderServices {
     companion object{
         fun placeOrder(userName:String,orderQuantity:Long, orderType:String, orderPrice:Long, typeOfESOP:String="NON-PERFORMANCE"): MutableMap<String, Any> {
+
             val user=UserRepo.getUser(userName)!!
 
             if (orderType == "BUY") {
-
-                throwExceptionIfInvalidBuyOrder(userName,orderQuantity, orderPrice)
+                OrderValidations.throwExceptionIfInvalidBuyOrder(userName,orderQuantity, orderPrice)
 
                 addBuyOrder(user,orderQuantity, orderPrice)
+
             } else if (orderType == "SELL") {
-                user!!.addSellOrder(orderQuantity, orderPrice, typeOfESOP)
+                OrderValidations.throwExceptionIfInvalidSellOrder(userName,typeOfESOP,orderQuantity,orderPrice)
+
+                addSellOrder(user,orderQuantity, orderPrice, typeOfESOP)
             }
             Util.matchOrders()
 
@@ -40,6 +42,25 @@ class OrderServices {
             user.orders.add(newOrder)
             Util.addOrderToBuyList(newOrder)
         }
+
+        fun addSellOrder(user:User,orderQuantity: Long, orderPrice: Long, typeOfESOP: String){
+
+            val newOrder = Order(user.username, Util.generateOrderId(), orderQuantity, orderPrice, "SELL")
+            user.orders.add(newOrder)
+
+            if(typeOfESOP == "PERFORMANCE") {
+
+                user.moveFreePerformanceInventoryToLockedPerformanceInventory(orderQuantity)
+                Util.addOrderToPerformanceSellList(newOrder)
+            }
+            else if(typeOfESOP == "NON-PERFORMANCE") {
+                user.moveFreeInventoryToLockedInventory(orderQuantity)
+                Util.addOrderToSellList(newOrder)
+            }
+        }
+
+
+
 
     }
 }

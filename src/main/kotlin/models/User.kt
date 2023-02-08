@@ -1,9 +1,6 @@
 package models
 
-import exception.ValidationException
 import repo.UserRepo
-import services.Util
-import kotlin.math.roundToLong
 
 class User(
     val username: String,
@@ -16,64 +13,7 @@ class User(
     val orders: ArrayList<Order> = ArrayList()
 
 
-
-
-    fun addSellOrder(orderQuantity: Long, orderPrice: Long, typeOfESOP: String){
-        if(typeOfESOP == "PERFORMANCE")
-            addPerformanceSellOrder(orderQuantity, orderPrice)
-        else if(typeOfESOP == "NON-PERFORMANCE")
-            addNonPerformanceSellOrder(orderQuantity,orderPrice)
-    }
-
-    private fun addPerformanceSellOrder(orderQuantity: Long, orderPrice: Long){
-        throwExceptionIfInvalidPerformanceEsopSellOrder(orderQuantity, orderPrice)
-
-        moveFreePerformanceInventoryToLockedPerformanceInventory(orderQuantity)
-
-        val newOrder = Order(username, Util.generateOrderId(), orderQuantity, orderPrice, "SELL")
-        orders.add(newOrder)
-
-        Util.addOrderToPerformanceSellList(newOrder)
-    }
-
-    private fun addNonPerformanceSellOrder(orderQuantity: Long, orderPrice: Long){
-        throwExceptionIfInvalidNonPerformanceEsopSellOrder(orderQuantity, orderPrice)
-
-        moveFreeInventoryToLockedInventory(orderQuantity)
-
-        val newOrder = Order(username, Util.generateOrderId(), orderQuantity, orderPrice, "SELL")
-        orders.add(newOrder)
-
-        Util.addOrderToSellList(newOrder)
-    }
-
-    private fun throwExceptionIfInvalidNonPerformanceEsopSellOrder(orderQuantity: Long, orderPrice: Long){
-        val errorList = ArrayList<String>()
-        val transactionAmount = orderQuantity * orderPrice
-        val transactionAmountFeeDeducted = (transactionAmount*(1-DataStorage.COMMISSION_FEE_PERCENTAGE*0.01)).roundToLong()
-
-        if(getFreeInventory() < orderQuantity)
-            errorList.add("Insufficient non-performance ESOPs in inventory")
-        if(getFreeMoney() + getLockedMoney() + transactionAmountFeeDeducted > DataStorage.MAX_AMOUNT)
-            errorList.add("Wallet threshold will be exceeded")
-
-        if(errorList.isNotEmpty())
-            throw ValidationException(ErrorResponse(errorList))
-    }
-
-    private fun throwExceptionIfInvalidPerformanceEsopSellOrder(orderQuantity: Long, orderPrice: Long){
-        val errorList = ArrayList<String>()
-        val transactionAmount = orderQuantity * orderPrice
-
-        if(getFreePerformanceInventory() < orderQuantity)
-            errorList.add("Insufficient performance ESOPs in inventory")
-        if(getFreeMoney() + getLockedMoney() + transactionAmount > DataStorage.MAX_AMOUNT)
-            errorList.add("Wallet threshold will be exceeded")
-
-        if(errorList.isNotEmpty())
-            throw ValidationException(ErrorResponse(errorList))
-    }
-    fun getOrderDetails(): Map<String, ArrayList<Map<String,Any>>> {
+    fun getOrderDetails(): Map<String, ArrayList<Map<String, Any>>> {
         if (orders.size == 0) {
             return mapOf("order_history" to ArrayList())
         }
@@ -152,7 +92,8 @@ class User(
 
     fun addEsopToInventory(esopsToBeAdded: Long, type: String = "NON-PERFORMANCE") {
         if (type == "PERFORMANCE") {
-            this.account.inventory.freePerformanceInventory = this.account.inventory.freePerformanceInventory + esopsToBeAdded
+            this.account.inventory.freePerformanceInventory =
+                this.account.inventory.freePerformanceInventory + esopsToBeAdded
         } else {
             this.account.inventory.freeInventory = this.account.inventory.freeInventory + esopsToBeAdded
         }
@@ -178,7 +119,8 @@ class User(
 
     fun updateLockedInventory(inventoryToBeUpdated: Long, isPerformanceESOP: Boolean) {
         if (isPerformanceESOP)
-            this.account.inventory.lockedPerformanceInventory = this.account.inventory.lockedPerformanceInventory - inventoryToBeUpdated
+            this.account.inventory.lockedPerformanceInventory =
+                this.account.inventory.lockedPerformanceInventory - inventoryToBeUpdated
         else
             this.account.inventory.lockedInventory = this.account.inventory.lockedInventory - inventoryToBeUpdated
     }
@@ -196,24 +138,29 @@ class User(
         if (this.account.inventory.freePerformanceInventory < esopsToBeLocked) {
             return "Insufficient ESOPs in Inventory"
         }
-        this.account.inventory.freePerformanceInventory = this.account.inventory.freePerformanceInventory - esopsToBeLocked
-        this.account.inventory.lockedPerformanceInventory = this.account.inventory.lockedPerformanceInventory + esopsToBeLocked
+        this.account.inventory.freePerformanceInventory =
+            this.account.inventory.freePerformanceInventory - esopsToBeLocked
+        this.account.inventory.lockedPerformanceInventory =
+            this.account.inventory.lockedPerformanceInventory + esopsToBeLocked
         return "Success"
     }
 
-    fun isInventoryWithInLimit(userName: String,orderQuantity:Long): Boolean {
-        val user= UserRepo.userList[userName]!!
-        return (user.getFreeInventory()+user.getLockedInventory()+orderQuantity<=DataStorage.MAX_QUANTITY)
+    fun isInventoryWithInLimit(userName: String, orderQuantity: Long): Boolean {
+        val user = UserRepo.userList[userName]!!
+        return (user.getFreeInventory() + user.getLockedInventory() + orderQuantity <= DataStorage.MAX_QUANTITY)
     }
 
+    fun isAmountWithInLimit(userName: String, orderAmount: Long): Boolean {
+        val user = UserRepo.userList[userName]!!
+        return (user.getFreeMoney() + user.getLockedMoney() + orderAmount <= DataStorage.MAX_AMOUNT)
+
+    }
 
 
     fun getFreeMoney(userName: String): Long {
         return UserRepo.userList[userName]!!.getFreeMoney()
 
     }
-
-
 
 
 }

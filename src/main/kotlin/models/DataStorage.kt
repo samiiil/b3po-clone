@@ -1,4 +1,5 @@
 package models
+
 import services.BuyOrderingComparator
 import services.SellOrderingComparator
 import java.math.BigInteger
@@ -21,7 +22,4 @@ class DataStorage {
 
 
     }
-
-
-
 }
