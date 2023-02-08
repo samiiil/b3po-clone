@@ -21,5 +21,20 @@ class DataStorage {
         const val MAX_AMOUNT = 10_000_000
         const val MAX_QUANTITY = 10_000_000
         var TOTAL_FEE_COLLECTED: BigInteger = BigInteger.valueOf(0)
+
+
+        fun isUserExists(userName:String): Boolean {
+
+            return (userList.containsKey(userName))
+
+        }
+
+
+        fun getUser(userName: String): User? {
+            return userList[userName]
+        }
     }
+
+
+
 }
