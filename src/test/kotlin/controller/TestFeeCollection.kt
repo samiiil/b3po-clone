@@ -1,5 +1,6 @@
 package controller
 
+import services.OrderServices
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
@@ -55,8 +56,9 @@ class TestFeeCollection {
 
     @Test
     fun `total fee should be 2 percent of total transaction`() {
-        DataStorage.userList["jake"]!!.addOrderToExecutionQueue(1,"BUY", 100)
-        DataStorage.userList["amy"]!!.addOrderToExecutionQueue(1,"SELL",100)
+
+        OrderServices.placeOrder("jake",1,"BUY",100)
+        OrderServices.placeOrder("amy",1,"SELL",100)
         val request = HttpRequest.GET<FeeResponse>("/fees")
 
         val response = client.toBlocking().retrieve(request, FeeResponse::class.java)
@@ -66,8 +68,9 @@ class TestFeeCollection {
 
     @Test
     fun `total fee should be rounded and not floored`() {
-        DataStorage.userList["jake"]!!.addOrderToExecutionQueue(1,"BUY", 30)
-        DataStorage.userList["amy"]!!.addOrderToExecutionQueue(1,"SELL",30)
+        OrderServices.placeOrder("jake",1,"BUY",30)
+        OrderServices.placeOrder("amy",1,"SELL",30)
+
         val request = HttpRequest.GET<FeeResponse>("/fees")
 
         val response = client.toBlocking().retrieve(request, FeeResponse::class.java)

@@ -1,11 +1,13 @@
 package models
 
+import services.OrderServices
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import services.saveUser
 import kotlin.math.roundToLong
+
 class TestOrderExecution {
     @BeforeEach
     fun setup(){
@@ -36,10 +38,13 @@ class TestOrderExecution {
         val seller = DataStorage.userList["amy"]!!
         val expectedSellerWallet = (150*(1-DataStorage.COMMISSION_FEE_PERCENTAGE*0.01)).roundToLong()
 
-        buyer.addOrderToExecutionQueue(5, "BUY", 10)
-        buyer.addOrderToExecutionQueue(5, "BUY", 10)
-        buyer.addOrderToExecutionQueue(5, "BUY", 10)
-        seller.addOrderToExecutionQueue(15, "SELL", 10)
+        OrderServices.placeOrder("jake",5, "BUY", 10)
+        OrderServices.placeOrder("jake",5, "BUY", 10)
+        OrderServices.placeOrder("jake",5, "BUY", 10)
+        OrderServices.placeOrder("amy",15, "SELL", 10)
+
+
+
 
         assert(DataStorage.buyList.isEmpty())
         assert(DataStorage.sellList.isEmpty())
@@ -55,8 +60,10 @@ class TestOrderExecution {
         val seller = DataStorage.userList["amy"]!!
         val expectedSellerWallet = (5*(1-DataStorage.COMMISSION_FEE_PERCENTAGE*0.01)).roundToLong()
 
-        buyer.addOrderToExecutionQueue(1, "BUY", 10)
-        seller.addOrderToExecutionQueue(1, "SELL", 5)
+        OrderServices.placeOrder("jake",1, "BUY", 10)
+        OrderServices.placeOrder("amy",1, "SELL", 5)
+
+
 
         assertEquals(10000 - 5, buyer.getFreeMoney())
         assertEquals(expectedSellerWallet, seller.getFreeMoney())
@@ -67,9 +74,12 @@ class TestOrderExecution {
         val buyer = DataStorage.userList["jake"]!!
         val seller = DataStorage.userList["amy"]!!
 
-        seller.addOrderToExecutionQueue(1, "SELL", 10)
-        seller.addOrderToExecutionQueue(1,"SELL", 5)
-        buyer.addOrderToExecutionQueue(1, "BUY", 10)
+
+        OrderServices.placeOrder("amy",1, "SELL", 10)
+        OrderServices.placeOrder("amy",1, "SELL", 5)
+        OrderServices.placeOrder("jake",1, "BUY", 10)
+
+
 
         assertEquals("Unfilled", seller.orders[0].orderStatus)
         assertEquals(10, seller.orders[0].orderPrice)
@@ -85,9 +95,12 @@ class TestOrderExecution {
         val buyer = DataStorage.userList["jake"]!!
         val seller = DataStorage.userList["amy"]!!
 
-        buyer.addOrderToExecutionQueue(1,"BUY",5)
-        buyer.addOrderToExecutionQueue(1,"BUY",10)
-        seller.addOrderToExecutionQueue(1, "SELL", 5)
+
+        OrderServices.placeOrder("jake",1, "BUY", 5)
+        OrderServices.placeOrder("jake",1, "BUY", 10)
+        OrderServices.placeOrder("amy",1, "SELL", 5)
+
+
 
         assertEquals("Unfilled", buyer.orders[0].orderStatus)
         assertEquals(5, buyer.orders[0].orderPrice)
@@ -102,9 +115,12 @@ class TestOrderExecution {
         val buyer = DataStorage.userList["jake"]!!
         val seller = DataStorage.userList["amy"]!!
 
-        seller.addOrderToExecutionQueue(1, "SELL", 5, "NON-PERFORMANCE")
-        seller.addOrderToExecutionQueue(1, "SELL", 10, "PERFORMANCE")
-        buyer.addOrderToExecutionQueue(1,"BUY", 10)
+        OrderServices.placeOrder("amy",1, "SELL", 5,"NON-PERFORMANCE")
+        OrderServices.placeOrder("amy",1, "SELL", 10,"PERFORMANCE")
+        OrderServices.placeOrder("jake",1, "BUY", 10)
+
+
+
 
         assertEquals("Unfilled", seller.orders[0].orderStatus)
         assertEquals(5, seller.orders[0].orderPrice)
@@ -120,8 +136,11 @@ class TestOrderExecution {
         val buyer = DataStorage.userList["jake"]!!
         val seller = DataStorage.userList["amy"]!!
 
-        seller.addOrderToExecutionQueue(1, "SELL", 10, "PERFORMANCE")
-        buyer.addOrderToExecutionQueue(1,"BUY", 10)
+
+        OrderServices.placeOrder("amy",1, "SELL", 10,"PERFORMANCE")
+        OrderServices.placeOrder("jake",1, "BUY", 10)
+
+
 
         assertEquals(0, buyer.getLockedPerformanceInventory())
         assertEquals(0, buyer.getFreePerformanceInventory())
@@ -134,9 +153,11 @@ class TestOrderExecution {
         val buyer = DataStorage.userList["jake"]!!
         val seller = DataStorage.userList["amy"]!!
 
-        seller.addOrderToExecutionQueue(1, "SELL", 10, "PERFORMANCE")
-        seller.addOrderToExecutionQueue(1, "SELL", 5, "PERFORMANCE")
-        buyer.addOrderToExecutionQueue(1,"BUY",10)
+        OrderServices.placeOrder("amy",1, "SELL", 10,"PERFORMANCE")
+        OrderServices.placeOrder("amy",1, "SELL", 5,"PERFORMANCE")
+        OrderServices.placeOrder("jake",1, "BUY", 10)
+
+
 
         assertEquals(10000-10, buyer.getFreeMoney())
         assertEquals(0,buyer.getLockedMoney())
