@@ -6,9 +6,6 @@ import java.util.*
 
 class DataStorage {
     companion object {
-        val userList: HashMap<String, User> = HashMap()
-        val registeredEmails = mutableSetOf<String>()
-        val registeredPhoneNumbers = mutableSetOf<String>()
 
         var orderId: Long = 1L
         var orderExecutionId = 1L
@@ -23,16 +20,6 @@ class DataStorage {
         var TOTAL_FEE_COLLECTED: BigInteger = BigInteger.valueOf(0)
 
 
-        fun isUserExists(userName:String): Boolean {
-
-            return (userList.containsKey(userName))
-
-        }
-
-
-        fun getUser(userName: String): User? {
-            return userList[userName]
-        }
     }
 
 

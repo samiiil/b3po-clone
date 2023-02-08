@@ -3,6 +3,7 @@ package services
 import models.DataStorage
 import models.Order
 import models.OrderExecutionLogs
+import repo.UserRepo
 import java.math.BigInteger
 import kotlin.math.min
 import kotlin.math.roundToLong
@@ -99,14 +100,14 @@ class Util {
             orderExecutionPrice: Long,
             isPerformanceESOP: Boolean
         ) {
-            val seller = DataStorage.userList[sellOrder.userName]!!
+            val seller = UserRepo.userList[sellOrder.userName]!!
             val orderAmount = orderQuantity * orderExecutionPrice
             seller.updateLockedInventory(orderQuantity, isPerformanceESOP)
             seller.addMoneyToWallet((orderAmount * (1 - DataStorage.COMMISSION_FEE_PERCENTAGE * 0.01)).roundToLong())
         }
 
         private fun updateBuyerInventoryAndWallet(buyOrder: Order, orderQuantity: Long, orderExecutionPrice: Long) {
-            val buyer = DataStorage.userList[buyOrder.userName]!!
+            val buyer = UserRepo.userList[buyOrder.userName]!!
             val orderAmount = orderQuantity * orderExecutionPrice
             buyer.updateLockedMoney(orderAmount)
             buyer.addEsopToInventory(orderQuantity)

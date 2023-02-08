@@ -13,6 +13,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import repo.UserRepo
 import services.saveUser
 import java.math.BigInteger
 
@@ -34,9 +35,9 @@ class TestFeeCollection {
 
     @AfterEach
     fun tearDown() {
-        DataStorage.userList.clear()
-        DataStorage.registeredEmails.clear()
-        DataStorage.registeredPhoneNumbers.clear()
+        UserRepo.userList.clear()
+        UserRepo.registeredEmails.clear()
+        UserRepo.registeredPhoneNumbers.clear()
         DataStorage.buyList.clear()
         DataStorage.sellList.clear()
         DataStorage.performanceSellList.clear()

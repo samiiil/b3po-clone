@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import repo.UserRepo
 import services.saveUser
 import kotlin.math.roundToLong
 
@@ -23,9 +24,9 @@ class TestOrderExecution {
 
     @AfterEach
     fun tearDown(){
-        DataStorage.userList.clear()
-        DataStorage.registeredEmails.clear()
-        DataStorage.registeredPhoneNumbers.clear()
+        UserRepo.userList.clear()
+        UserRepo.registeredEmails.clear()
+        UserRepo.registeredPhoneNumbers.clear()
         DataStorage.buyList.clear()
         DataStorage.sellList.clear()
         DataStorage.performanceSellList.clear()
@@ -34,8 +35,8 @@ class TestOrderExecution {
     }
     @Test
     fun `multiple buy orders by one user and one sell order by another user to fulfill them completely`(){
-        val buyer = DataStorage.userList["jake"]!!
-        val seller = DataStorage.userList["amy"]!!
+        val buyer = UserRepo.userList["jake"]!!
+        val seller = UserRepo.userList["amy"]!!
         val expectedSellerWallet = (150*(1-DataStorage.COMMISSION_FEE_PERCENTAGE*0.01)).roundToLong()
 
         OrderServices.placeOrder("jake",5, "BUY", 10)
@@ -56,8 +57,8 @@ class TestOrderExecution {
 
     @Test
     fun `should take sell price as order price when buy price is higher`(){
-        val buyer = DataStorage.userList["jake"]!!
-        val seller = DataStorage.userList["amy"]!!
+        val buyer = UserRepo.userList["jake"]!!
+        val seller = UserRepo.userList["amy"]!!
         val expectedSellerWallet = (5*(1-DataStorage.COMMISSION_FEE_PERCENTAGE*0.01)).roundToLong()
 
         OrderServices.placeOrder("jake",1, "BUY", 10)
@@ -71,8 +72,8 @@ class TestOrderExecution {
 
     @Test
     fun `should prioritize sell order that has lower price`(){
-        val buyer = DataStorage.userList["jake"]!!
-        val seller = DataStorage.userList["amy"]!!
+        val buyer = UserRepo.userList["jake"]!!
+        val seller = UserRepo.userList["amy"]!!
 
 
         OrderServices.placeOrder("amy",1, "SELL", 10)
@@ -92,8 +93,8 @@ class TestOrderExecution {
 
     @Test
     fun `should prioritize buy order that has higher price`(){
-        val buyer = DataStorage.userList["jake"]!!
-        val seller = DataStorage.userList["amy"]!!
+        val buyer = UserRepo.userList["jake"]!!
+        val seller = UserRepo.userList["amy"]!!
 
 
         OrderServices.placeOrder("jake",1, "BUY", 5)
@@ -112,8 +113,8 @@ class TestOrderExecution {
 
     @Test
     fun `should prioritize performance ESOP sell orders over non-performance ESOP sell orders`(){
-        val buyer = DataStorage.userList["jake"]!!
-        val seller = DataStorage.userList["amy"]!!
+        val buyer = UserRepo.userList["jake"]!!
+        val seller = UserRepo.userList["amy"]!!
 
         OrderServices.placeOrder("amy",1, "SELL", 5,"NON-PERFORMANCE")
         OrderServices.placeOrder("amy",1, "SELL", 10,"PERFORMANCE")
@@ -133,8 +134,8 @@ class TestOrderExecution {
 
     @Test
     fun `buyer should get non-performance ESOP even if seller sells performance ESOPs`(){
-        val buyer = DataStorage.userList["jake"]!!
-        val seller = DataStorage.userList["amy"]!!
+        val buyer = UserRepo.userList["jake"]!!
+        val seller = UserRepo.userList["amy"]!!
 
 
         OrderServices.placeOrder("amy",1, "SELL", 10,"PERFORMANCE")
@@ -150,8 +151,8 @@ class TestOrderExecution {
 
     @Test
     fun `should prioritize order that came first among multiple performance ESOP sell orders irrespective of price`(){
-        val buyer = DataStorage.userList["jake"]!!
-        val seller = DataStorage.userList["amy"]!!
+        val buyer = UserRepo.userList["jake"]!!
+        val seller = UserRepo.userList["amy"]!!
 
         OrderServices.placeOrder("amy",1, "SELL", 10,"PERFORMANCE")
         OrderServices.placeOrder("amy",1, "SELL", 5,"PERFORMANCE")

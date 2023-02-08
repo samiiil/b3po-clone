@@ -2,9 +2,10 @@ package services
 
 import models.DataStorage
 import models.User
+import repo.UserRepo
 
 fun saveUser(user: User) {
-    DataStorage.userList[user.username] = user
-    DataStorage.registeredEmails.add(user.emailId)
-    DataStorage.registeredPhoneNumbers.add(user.phoneNumber)
+    UserRepo.userList[user.username] = user
+    UserRepo.registeredEmails.add(user.emailId)
+    UserRepo.registeredPhoneNumbers.add(user.phoneNumber)
 }

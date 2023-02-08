@@ -6,6 +6,7 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
 import models.*
+import repo.UserRepo
 import services.Validations
 import services.saveUser
 
@@ -73,8 +74,8 @@ class UserController {
             return HttpResponse.badRequest(response)
         }
 
-        val freeMoney = DataStorage.userList[userName]!!.getFreeMoney()
-        val lockedMoney = DataStorage.userList[userName]!!.getLockedMoney()
+        val freeMoney = UserRepo.userList[userName]!!.getFreeMoney()
+        val lockedMoney = UserRepo.userList[userName]!!.getLockedMoney()
 
         if (((amountToBeAdded + freeMoney + lockedMoney) <= 0) ||
             ((amountToBeAdded + freeMoney + lockedMoney) > DataStorage.MAX_AMOUNT)
@@ -85,7 +86,7 @@ class UserController {
             response = mapOf("error" to errorMessages)
             return HttpResponse.status<Any>(HttpStatus.BAD_REQUEST).body(response)
         }
-        DataStorage.userList[userName]!!.addMoneyToWallet(amountToBeAdded)
+        UserRepo.userList[userName]!!.addMoneyToWallet(amountToBeAdded)
 
         response = mapOf("message" to "$amountToBeAdded amount added to account")
         return HttpResponse.status<Any>(HttpStatus.OK).body(response)
@@ -114,8 +115,8 @@ class UserController {
             return HttpResponse.status<Any>(HttpStatus.OK).body(response)
         } else if (quantityToBeAdded != null) {
             if (typeOfESOP == "NON-PERFORMANCE") {
-                val freeInventory = DataStorage.userList[userName]!!.getFreeInventory()
-                val lockedInventory = DataStorage.userList[userName]!!.getLockedInventory()
+                val freeInventory = UserRepo.userList[userName]!!.getFreeInventory()
+                val lockedInventory = UserRepo.userList[userName]!!.getLockedInventory()
                 val totalQuantity = freeInventory + lockedInventory + quantityToBeAdded
 
 
@@ -125,9 +126,9 @@ class UserController {
 
             } else if (typeOfESOP == "PERFORMANCE") {
                 val freePerformanceInventory =
-                    DataStorage.userList[userName]!!.getFreePerformanceInventory()
+                    UserRepo.userList[userName]!!.getFreePerformanceInventory()
                 val lockedPerformanceInventory =
-                    DataStorage.userList[userName]!!.getFreePerformanceInventory()
+                    UserRepo.userList[userName]!!.getFreePerformanceInventory()
                 val totalQuantity = freePerformanceInventory + lockedPerformanceInventory + quantityToBeAdded
 
 
@@ -140,7 +141,7 @@ class UserController {
                 response = mapOf("error" to errorMessages)
                 return HttpResponse.badRequest(response)
             }
-            DataStorage.userList[userName]!!.addEsopToInventory(quantityToBeAdded, typeOfESOP)
+            UserRepo.userList[userName]!!.addEsopToInventory(quantityToBeAdded, typeOfESOP)
         }
         if (errorMessages.size > 0) {
             response = mapOf("error" to errorMessages)
@@ -164,24 +165,24 @@ class UserController {
         }
 
         response = mapOf(
-            "FirstName" to DataStorage.userList[userName]!!.firstName,
-            "LastName" to DataStorage.userList[userName]!!.lastName,
-            "Phone" to DataStorage.userList[userName]!!.phoneNumber,
-            "EmailID" to DataStorage.userList[userName]!!.emailId,
+            "FirstName" to UserRepo.userList[userName]!!.firstName,
+            "LastName" to UserRepo.userList[userName]!!.lastName,
+            "Phone" to UserRepo.userList[userName]!!.phoneNumber,
+            "EmailID" to UserRepo.userList[userName]!!.emailId,
             "Wallet" to mapOf(
-                "free" to DataStorage.userList[userName]!!.getFreeMoney(),
-                "locked" to DataStorage.userList[userName]!!.getLockedMoney()
+                "free" to UserRepo.userList[userName]!!.getFreeMoney(),
+                "locked" to UserRepo.userList[userName]!!.getLockedMoney()
             ),
             "Inventory" to arrayListOf<Any>(
                 mapOf(
                     "esop_type" to "PERFORMANCE",
-                    "free" to DataStorage.userList[userName]!!.getFreePerformanceInventory(),
-                    "locked" to DataStorage.userList[userName]!!.getLockedPerformanceInventory()
+                    "free" to UserRepo.userList[userName]!!.getFreePerformanceInventory(),
+                    "locked" to UserRepo.userList[userName]!!.getLockedPerformanceInventory()
                 ),
                 mapOf(
                     "esop_type" to "NON-PERFORMANCE",
-                    "free" to DataStorage.userList[userName]!!.getFreeInventory(),
-                    "locked" to DataStorage.userList[userName]!!.getLockedInventory()
+                    "free" to UserRepo.userList[userName]!!.getFreeInventory(),
+                    "locked" to UserRepo.userList[userName]!!.getLockedInventory()
                 )
             )
         )
@@ -206,7 +207,7 @@ class UserController {
             response = mapOf("error" to errorMessages)
             return HttpResponse.status<Any>(HttpStatus.UNAUTHORIZED).body(response)
         }
-        response = DataStorage.userList[userName]!!.getOrderDetails()
+        response = UserRepo.userList[userName]!!.getOrderDetails()
         return HttpResponse.status<Any>(HttpStatus.OK).body(response)
     }
 }

@@ -1,6 +1,7 @@
 package validations
 
 import models.DataStorage
+import repo.UserRepo
 
 class UserValidations {
 
@@ -10,7 +11,7 @@ class UserValidations {
             val errorMessages: ArrayList<String> = ArrayList()
             val response: MutableMap<String, ArrayList<String>>
 
-            if (!DataStorage.isUserExists(userName)) {
+            if (!UserRepo.isUserExists(userName)) {
                 errorMessages.add("userName does not exists.")
                 response = mapOf("error" to errorMessages) as MutableMap<String, ArrayList<String>>
                 return response

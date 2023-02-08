@@ -3,14 +3,15 @@ package models
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import repo.UserRepo
 import services.saveUser
 
 class TestUserRegistration {
     @AfterEach
     fun tearDown(){
-        DataStorage.userList.clear()
-        DataStorage.registeredEmails.clear()
-        DataStorage.registeredPhoneNumbers.clear()
+        UserRepo.userList.clear()
+        UserRepo.registeredEmails.clear()
+        UserRepo.registeredPhoneNumbers.clear()
         DataStorage.buyList.clear()
         DataStorage.sellList.clear()
         DataStorage.performanceSellList.clear()
@@ -23,8 +24,8 @@ class TestUserRegistration {
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
         saveUser(user)
 
-        assertEquals(1, DataStorage.userList.size)
-        assertEquals(user, DataStorage.userList["user"])
+        assertEquals(1, UserRepo.userList.size)
+        assertEquals(user, UserRepo.userList["user"])
     }
 
     @Test
@@ -36,10 +37,10 @@ class TestUserRegistration {
         saveUser(user2)
         saveUser(user3)
 
-        assertEquals(3, DataStorage.userList.size)
-        assertEquals(user1, DataStorage.userList["user1"])
-        assertEquals(user2, DataStorage.userList["user2"])
-        assertEquals(user3, DataStorage.userList["user3"])
+        assertEquals(3, UserRepo.userList.size)
+        assertEquals(user1, UserRepo.userList["user1"])
+        assertEquals(user2, UserRepo.userList["user2"])
+        assertEquals(user3, UserRepo.userList["user3"])
     }
 
     @Test
@@ -47,8 +48,8 @@ class TestUserRegistration {
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
         saveUser(user)
 
-        assertEquals(1, DataStorage.registeredEmails.size)
-        assert(DataStorage.registeredEmails.contains("user@example.com"))
+        assertEquals(1, UserRepo.registeredEmails.size)
+        assert(UserRepo.registeredEmails.contains("user@example.com"))
     }
 
     @Test
@@ -56,8 +57,8 @@ class TestUserRegistration {
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
         saveUser(user)
 
-        assertEquals(1, DataStorage.registeredEmails.size)
-        assert(DataStorage.registeredPhoneNumbers.contains("+911234567890"))
+        assertEquals(1, UserRepo.registeredEmails.size)
+        assert(UserRepo.registeredPhoneNumbers.contains("+911234567890"))
     }
 
     @Test

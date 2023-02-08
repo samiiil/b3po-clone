@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import repo.UserRepo
 import services.saveUser
 
 
@@ -14,9 +15,9 @@ import services.saveUser
 class TestOrderCreation {
     @AfterEach
     fun tearDown(){
-        DataStorage.userList.clear()
-        DataStorage.registeredEmails.clear()
-        DataStorage.registeredPhoneNumbers.clear()
+        UserRepo.userList.clear()
+        UserRepo.registeredEmails.clear()
+        UserRepo.registeredPhoneNumbers.clear()
         DataStorage.buyList.clear()
         DataStorage.sellList.clear()
         DataStorage.performanceSellList.clear()
@@ -26,7 +27,7 @@ class TestOrderCreation {
     @Test
     fun `can create buy order if user has money in wallet`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
 
         user.addMoneyToWallet(100)
 
@@ -38,7 +39,7 @@ class TestOrderCreation {
     @Test
     fun `cannot create buy order if user doesn't have enough money in wallet`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
 
         val exception = assertThrows(ValidationException::class.java){ OrderServices.placeOrder("user",1, "BUY", 100) }
         val errors = exception.errorResponse.error
@@ -51,7 +52,7 @@ class TestOrderCreation {
     @Test
     fun `creating buy order moves money to locked wallet`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addMoneyToWallet(100)
 
         OrderServices.placeOrder("user",1, "BUY", 100)
@@ -62,7 +63,7 @@ class TestOrderCreation {
     @Test
     fun `correct buy order is created`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addMoneyToWallet(100)
 
         OrderServices.placeOrder("user",1, "BUY", 100)
@@ -77,7 +78,7 @@ class TestOrderCreation {
     @Test
     fun `creating buy order adds order to global buy list`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addMoneyToWallet(100)
 
         OrderServices.placeOrder("user",1, "BUY", 100)
@@ -88,7 +89,7 @@ class TestOrderCreation {
     @Test
     fun `can create sell order if user has enough esops`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addEsopToInventory(1)
 
         OrderServices.placeOrder("user",1, "SELL", 100)
@@ -98,7 +99,7 @@ class TestOrderCreation {
     @Test
     fun `cannot create sell order if user doesn't have enough esops in inventory`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
 
         val exception = assertThrows(ValidationException::class.java){   OrderServices.placeOrder("user",1, "SELL", 100) }
         val errors = exception.errorResponse.error
@@ -111,7 +112,7 @@ class TestOrderCreation {
     @Test
     fun `creating sell order locks esops`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addEsopToInventory(1)
 
         OrderServices.placeOrder("user",1, "SELL", 100)
@@ -122,7 +123,7 @@ class TestOrderCreation {
     @Test
     fun `correct sell order is created`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addEsopToInventory(1)
         OrderServices.placeOrder("user",1, "SELL", 100)
 
@@ -136,7 +137,7 @@ class TestOrderCreation {
     @Test
     fun `creating sell order adds order to global sell list`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addEsopToInventory(1)
 
         OrderServices.placeOrder("user",1, "SELL", 100)
@@ -148,7 +149,7 @@ class TestOrderCreation {
     @Test
     fun `can create performance sell order if user has enough performance esops`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addEsopToInventory(1, "PERFORMANCE")
 
         OrderServices.placeOrder("user",1, "SELL", 100,"PERFORMANCE")
@@ -159,7 +160,7 @@ class TestOrderCreation {
     @Test
     fun `cannot create performance sell order if user doesn't have enough performance esops in inventory`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
 
         val exception = assertThrows(ValidationException::class.java){
             OrderServices.placeOrder("user",1, "SELL", 100,"PERFORMANCE")
@@ -174,7 +175,7 @@ class TestOrderCreation {
     @Test
     fun `creating performance sell order locks esops`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addEsopToInventory(1, "PERFORMANCE")
 
         OrderServices.placeOrder("user",1, "SELL", 100,"PERFORMANCE")
@@ -186,7 +187,7 @@ class TestOrderCreation {
     @Test
     fun `correct performance sell order is created`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addEsopToInventory(1, "PERFORMANCE")
 
         OrderServices.placeOrder("user",1, "SELL", 100,"PERFORMANCE")
@@ -201,7 +202,7 @@ class TestOrderCreation {
     @Test
     fun `creating performance sell order adds order to global performance sell list`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addEsopToInventory(1, "PERFORMANCE")
 
         OrderServices.placeOrder("user",1, "SELL", 100,"PERFORMANCE")
@@ -214,7 +215,7 @@ class TestOrderCreation {
     @Test
     fun `order details is initially empty`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         val orderDetails = user.getOrderDetails()
 
         assert(orderDetails.keys.contains("order_history"))
@@ -224,7 +225,7 @@ class TestOrderCreation {
     @Test
     fun `order details for unfilled order is set correctly`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
 
         user.addMoneyToWallet(100)
 
@@ -292,7 +293,7 @@ class TestOrderCreation {
     fun `can log or print an order`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
 
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
 
         user.addEsopToInventory(1, "PERFORMANCE")
         val expected = """
@@ -317,7 +318,7 @@ class TestOrderCreation {
     fun `cannot create sell order that will cause wallet limit to be exceeded`(){
 
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addMoneyToWallet(DataStorage.MAX_AMOUNT-10L)
         user.addEsopToInventory(1)
 
@@ -332,7 +333,7 @@ class TestOrderCreation {
     @Test
     fun `cannot create buy order that will cause inventory limit to be exceeded`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        DataStorage.userList["user"]=user
+        UserRepo.userList["user"]=user
         user.addEsopToInventory(DataStorage.MAX_QUANTITY-10L)
         user.addMoneyToWallet(150)
 

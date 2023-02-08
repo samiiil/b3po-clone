@@ -15,6 +15,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import repo.UserRepo
 import services.saveUser
 
 @MicronautTest
@@ -40,9 +41,9 @@ WalletControllerTest {
 
     @AfterEach
     fun tearDown() {
-        DataStorage.userList.clear()
-        DataStorage.registeredEmails.clear()
-        DataStorage.registeredPhoneNumbers.clear()
+        UserRepo.userList.clear()
+        UserRepo.registeredEmails.clear()
+        UserRepo.registeredPhoneNumbers.clear()
         DataStorage.buyList.clear()
         DataStorage.sellList.clear()
         DataStorage.performanceSellList.clear()
@@ -54,7 +55,7 @@ WalletControllerTest {
     fun setUp() {
         val user = User("user1", "Amy", "Santiago", "9952053438", "amy@gmail.com")
         saveUser(user)
-        DataStorage.userList["user1"]!!.addMoneyToWallet(100)
+        UserRepo.userList["user1"]!!.addMoneyToWallet(100)
     }
 
     @Test
@@ -79,7 +80,7 @@ WalletControllerTest {
 
         //assertEquals()
         assertEquals("$amountToBeAdded amount added to account", response.message)
-        assertEquals(110, DataStorage.userList["user1"]!!.getFreeMoney()) //100 added in setup
+        assertEquals(110, UserRepo.userList["user1"]!!.getFreeMoney()) //100 added in setup
     }
 
     @Test

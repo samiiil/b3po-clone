@@ -3,6 +3,7 @@ package services
 import constants.PhoneNumber
 import models.DataStorage
 import models.RegisterInput
+import repo.UserRepo
 
 class Validations {
     companion object {
@@ -62,7 +63,7 @@ class Validations {
                 return errorList
             }
 
-            if (DataStorage.userList.contains(username))
+            if (UserRepo.userList.contains(username))
                 errorList.add("Username already taken")
 
             if (username.length < 3)
@@ -76,7 +77,7 @@ class Validations {
         }
 
         fun validateUser(userName: String): Boolean {
-            if (DataStorage.userList.containsKey(userName)) {
+            if (UserRepo.userList.containsKey(userName)) {
                 return true
             }
             return false
@@ -90,7 +91,7 @@ class Validations {
             }
 
 
-            if (DataStorage.registeredEmails.contains(emailId)) {
+            if (UserRepo.registeredEmails.contains(emailId)) {
                 errorList.add("Email already exists")
             }
             if (emailId.first() == '.' || emailId.first() == '-' || emailId.last() == '.' || emailId.last() == '-') {
@@ -140,7 +141,7 @@ class Validations {
                 errorList.add("phoneNumber is missing.")
                 return errorList
             }
-            if (DataStorage.registeredPhoneNumbers.contains(phoneNumber)) {
+            if (UserRepo.registeredPhoneNumbers.contains(phoneNumber)) {
                 errorList.add(PhoneNumber.ALREADY_EXISTS_ERROR_MESSAGE)
                 return errorList
             }
