@@ -14,22 +14,8 @@ class User(
     private val account: Account = Account()
     val orders: ArrayList<Order> = ArrayList()
 
-    fun addOrderToExecutionQueue(
-        orderQuantity: Long,
-        orderType: String,
-        orderPrice: Long,
-        typeOfESOP: String = "NON-PERFORMANCE"
-    ){
-        if (orderType == "BUY") {
-            addBuyOrder(orderQuantity, orderPrice)
-        } else if (orderType == "SELL") {
-            addSellOrder(orderQuantity, orderPrice, typeOfESOP)
-        }
 
-        Util.matchOrders()
-    }
-
-    private fun addBuyOrder(orderQuantity: Long, orderPrice: Long){
+    fun addBuyOrder(orderQuantity: Long, orderPrice: Long){
         throwExceptionIfInvalidBuyOrder(orderQuantity, orderPrice)
 
         val transactionAmount = orderQuantity * orderPrice
@@ -39,7 +25,7 @@ class User(
         Util.addOrderToBuyList(newOrder)
     }
 
-    private fun throwExceptionIfInvalidBuyOrder(orderQuantity: Long, orderPrice: Long) {
+    fun throwExceptionIfInvalidBuyOrder(orderQuantity: Long, orderPrice: Long) {
         val errorList = ArrayList<String>()
         val transactionAmount = orderQuantity * orderPrice
 
@@ -52,7 +38,7 @@ class User(
             throw ValidationException(ErrorResponse(errorList))
     }
 
-    private fun addSellOrder(orderQuantity: Long, orderPrice: Long, typeOfESOP: String){
+    fun addSellOrder(orderQuantity: Long, orderPrice: Long, typeOfESOP: String){
         if(typeOfESOP == "PERFORMANCE")
             addPerformanceSellOrder(orderQuantity, orderPrice)
         else if(typeOfESOP == "NON-PERFORMANCE")
