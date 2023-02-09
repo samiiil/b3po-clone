@@ -27,12 +27,13 @@ object RequestValidations {
             errorMessages.add("Price for the order is missing.")
         if (body.quantity == null)
             errorMessages.add("Quantity field for order is missing.")
-        if (body.orderType != null && body.orderType == "SELL" && body.esopType.isNullOrBlank()) {
-            errorMessages.add("esopType is missing, SELL order requires esopType.")
+        if (body.orderType != null && body.orderType == "SELL") {
+            if(body.esopType!=null && body.esopType!="PERFORMANCE")
+                errorMessages.add("ESOP type can only be PERFORMANCE")
         }
-
         if (errorMessages.isNotEmpty())
             throw ValidationException(ErrorResponse(errorMessages))
+
     }
 
 

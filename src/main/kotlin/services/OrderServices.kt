@@ -11,22 +11,25 @@ object OrderServices {
 
         fun placeOrder(user: User, orderQuantity: Long, orderType: String, orderPrice: Long, typeOfESOP: String = "NON-PERFORMANCE"): createOrderResponse {
 
+            var orderId: Long? =null
+            var esopType:String?=null
             if (orderType == "BUY") {
                 OrderValidations.throwExceptionIfInvalidBuyOrder(user, orderQuantity, orderPrice)
-                placeBuyOrder(user, orderQuantity, orderPrice)
+                orderId=placeBuyOrder(user, orderQuantity, orderPrice)
             }
             else if (orderType == "SELL") {
                 OrderValidations.throwExceptionIfInvalidSellOrder(user, typeOfESOP, orderQuantity, orderPrice)
-                placeSellOrder(user, orderQuantity, orderPrice, typeOfESOP)
+                orderId=placeSellOrder(user, orderQuantity, orderPrice, typeOfESOP)
+                esopType=typeOfESOP
             }
 
             matchOrders()
 
-            return createOrderResponse(orderQuantity,orderType,orderPrice,typeOfESOP)
+            return createOrderResponse(orderId,orderQuantity,orderType,orderPrice,esopType)
         }
 
 
-        private fun placeBuyOrder(user: User, orderQuantity: Long, orderPrice: Long) {
+        private fun placeBuyOrder(user: User, orderQuantity: Long, orderPrice: Long): Long {
 
             val transactionAmount = orderQuantity * orderPrice
             user.moveFreeMoneyToLockedMoney(transactionAmount)
@@ -35,9 +38,11 @@ object OrderServices {
             user.addOrderToUser(newOrder)
 
             OrderRepo.addBuyOrderToList(newOrder)
+
+            return newOrder.orderId
         }
 
-        private fun placeSellOrder(user: User, orderQuantity: Long, orderPrice: Long, typeOfESOP: String) {
+        private fun placeSellOrder(user: User, orderQuantity: Long, orderPrice: Long, typeOfESOP: String): Long {
 
             val newOrder = Order(user.getUserName(), OrderRepo.generateOrderId(), orderQuantity, orderPrice, "SELL")
             user.addOrderToUser(newOrder)
@@ -51,6 +56,8 @@ object OrderServices {
                 user.moveFreeInventoryToLockedInventory(orderQuantity)
                 OrderRepo.addSellOrderToList(newOrder)
             }
+
+            return newOrder.orderId
         }
 
 

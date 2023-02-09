@@ -1,4 +1,4 @@
 package models
 
-data class createOrderResponse(val quantity: Long, val orderType: String, val price: Long, val esopType: String) {
+data class createOrderResponse(val orderId: Long?, val quantity:Long, val type:String, val price:Long,val esopType:String?) {
 }
