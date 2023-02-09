@@ -50,32 +50,32 @@ class User(
     }
 
     private fun getAllCompletedTransactionsOfOrder(order: Order): ArrayList<Map<String, Any>> {
-        val partiallyFilledOrderExecutionLogs = ArrayList<Map<String, Any>>()
+        val executionLogs = ArrayList<Map<String, Any>>()
         val prices = mutableMapOf<Long, MutableMap<String, Long>>()
 
         order.orderExecutionLogs.forEach {
-            val currentOrderExecutionLogs = mutableMapOf<String, Long>()
+            val currentTransactionExecutionLogs = mutableMapOf<String, Long>()
             if (prices.containsKey(it.orderExecutionPrice)) {
                 prices[it.orderExecutionPrice]!!["quantity"] =
                     prices[it.orderExecutionPrice]!!["quantity"]!! + it.orderExecutionQuantity
             } else {
-                currentOrderExecutionLogs["price"] = it.orderExecutionPrice
-                currentOrderExecutionLogs["quantity"] = it.orderExecutionQuantity
-                prices[it.orderExecutionPrice] = currentOrderExecutionLogs
-                partiallyFilledOrderExecutionLogs.add(currentOrderExecutionLogs)
+                currentTransactionExecutionLogs["price"] = it.orderExecutionPrice
+                currentTransactionExecutionLogs["quantity"] = it.orderExecutionQuantity
+                prices[it.orderExecutionPrice] = currentTransactionExecutionLogs
+                executionLogs.add(currentTransactionExecutionLogs)
             }
         }
-        return partiallyFilledOrderExecutionLogs
+        return executionLogs
     }
 
 
     private fun getOrderHistoryOfUnfilledOrder(order: Order): ArrayList<Map<String, Any>> {
-        val unfilledOrderExecutionLogs = ArrayList<Map<String, Any>>()
-        val currentOrderExecutionLogs = mutableMapOf<String, Any>()
-        currentOrderExecutionLogs["price"] = order.orderPrice
-        currentOrderExecutionLogs["quantity"] = order.remainingOrderQuantity
-        unfilledOrderExecutionLogs.add(currentOrderExecutionLogs)
-        return unfilledOrderExecutionLogs
+        val executionLogs = ArrayList<Map<String, Any>>()
+        val pendingTransactionLog = mutableMapOf<String, Any>()
+        pendingTransactionLog["price"] = order.orderPrice
+        pendingTransactionLog["quantity"] = order.remainingOrderQuantity
+        executionLogs.add(pendingTransactionLog)
+        return executionLogs
     }
 
     fun addMoneyToWallet(amountToBeAdded: Long) {
