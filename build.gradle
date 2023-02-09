@@ -26,6 +26,18 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
+    testImplementation("io.micronaut.test:micronaut-test-rest-assured")
+
+    implementation('org.junit.jupiter:junit-jupiter-params:5.1.0')
+
+    testImplementation("io.micronaut.test:micronaut-test-rest-assured")
+    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+    testImplementation("io.micronaut.test:micronaut-test-rest-assured")
+
+
+
+
 }
 
 

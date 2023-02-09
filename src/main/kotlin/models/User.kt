@@ -12,8 +12,8 @@ class User(
     private val account: Account = Account()
     val orders: ArrayList<Order> = ArrayList()
 
-    fun getUserName(user: User): String {
-        return user.username
+    fun getUserName(): String {
+        return username
     }
 
     fun getOrderDetails(): Map<String, ArrayList<Map<String, Any>>> {

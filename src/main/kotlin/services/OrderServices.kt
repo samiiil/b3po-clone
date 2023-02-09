@@ -39,7 +39,7 @@ object OrderServices {
 
         private fun placeSellOrder(user: User, orderQuantity: Long, orderPrice: Long, typeOfESOP: String) {
 
-            val newOrder = Order(user.getUserName(user), OrderRepo.generateOrderId(), orderQuantity, orderPrice, "SELL")
+            val newOrder = Order(user.getUserName(), OrderRepo.generateOrderId(), orderQuantity, orderPrice, "SELL")
             user.addOrderToUser(newOrder)
             if (typeOfESOP == "PERFORMANCE") {
 

@@ -22,11 +22,11 @@ object RequestValidations {
 
 
         if (body.orderType.isNullOrBlank())
-            errorMessages.add("orderType is missing, orderType should be BUY or SELL.")
+            errorMessages.add("OrderType is missing, orderType should be BUY or SELL.")
         if (body.price == null)
-            errorMessages.add("price for the order is missing.")
+            errorMessages.add("Price for the order is missing.")
         if (body.quantity == null)
-            errorMessages.add("quantity field for order is missing.")
+            errorMessages.add("Quantity field for order is missing.")
         if (body.orderType != null && body.orderType == "SELL" && body.esopType.isNullOrBlank()) {
             errorMessages.add("esopType is missing, SELL order requires esopType.")
         }
