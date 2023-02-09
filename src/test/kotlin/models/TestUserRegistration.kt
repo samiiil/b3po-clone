@@ -3,6 +3,7 @@ package models
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import repo.OrderRepo
 import repo.UserRepo
 import services.saveUser
 
@@ -12,9 +13,9 @@ class TestUserRegistration {
         UserRepo.userList.clear()
         UserRepo.registeredEmails.clear()
         UserRepo.registeredPhoneNumbers.clear()
-        DataStorage.buyList.clear()
-        DataStorage.sellList.clear()
-        DataStorage.performanceSellList.clear()
+        OrderRepo.buyList.clear()
+        OrderRepo.sellList.clear()
+        OrderRepo.performanceSellList.clear()
         DataStorage.orderId = 1
         DataStorage.orderExecutionId = 1
     }

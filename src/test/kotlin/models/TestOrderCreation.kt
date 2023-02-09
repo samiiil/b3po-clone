@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
+import repo.OrderRepo
 import repo.UserRepo
 import services.saveUser
 
@@ -18,9 +19,9 @@ class TestOrderCreation {
         UserRepo.userList.clear()
         UserRepo.registeredEmails.clear()
         UserRepo.registeredPhoneNumbers.clear()
-        DataStorage.buyList.clear()
-        DataStorage.sellList.clear()
-        DataStorage.performanceSellList.clear()
+        OrderRepo.buyList.clear()
+        OrderRepo.sellList.clear()
+        OrderRepo.performanceSellList.clear()
         DataStorage.orderId = 1L
         DataStorage.orderExecutionId = 1L
     }
@@ -72,11 +73,11 @@ class TestOrderCreation {
 
         OrderServices.placeOrder("user",1, "BUY", 100)
 
-        assertEquals("Unfilled", DataStorage.buyList.peek().orderStatus)
-        assertEquals(1, DataStorage.buyList.peek().orderQuantity)
-        assertEquals("BUY", DataStorage.buyList.peek().orderType)
-        assertEquals(100, DataStorage.buyList.peek().orderPrice)
-        assertEquals(0, DataStorage.buyList.peek().orderExecutionLogs.size)
+        assertEquals("Unfilled", OrderRepo.buyList.peek().orderStatus)
+        assertEquals(1, OrderRepo.buyList.peek().orderQuantity)
+        assertEquals("BUY", OrderRepo.buyList.peek().orderType)
+        assertEquals(100, OrderRepo.buyList.peek().orderPrice)
+        assertEquals(0, OrderRepo.buyList.peek().orderExecutionLogs.size)
     }
 
     @Test
@@ -86,8 +87,8 @@ class TestOrderCreation {
         user.addMoneyToWallet(100)
 
         OrderServices.placeOrder("user",1, "BUY", 100)
-        assertEquals(1, DataStorage.buyList.size)
-        assertEquals(user.orders[0], DataStorage.buyList.peek())
+        assertEquals(1, OrderRepo.buyList.size)
+        assertEquals(user.orders[0], OrderRepo.buyList.peek())
     }
 
     @Test
@@ -131,11 +132,11 @@ class TestOrderCreation {
         user.addEsopToInventory(1)
         OrderServices.placeOrder("user",1, "SELL", 100)
 
-        assertEquals("Unfilled", DataStorage.sellList.peek().orderStatus)
-        assertEquals(1, DataStorage.sellList.peek().orderQuantity)
-        assertEquals("SELL", DataStorage.sellList.peek().orderType)
-        assertEquals(100, DataStorage.sellList.peek().orderPrice)
-        assertEquals(0, DataStorage.sellList.peek().orderExecutionLogs.size)
+        assertEquals("Unfilled", OrderRepo.sellList.peek().orderStatus)
+        assertEquals(1, OrderRepo.sellList.peek().orderQuantity)
+        assertEquals("SELL", OrderRepo.sellList.peek().orderType)
+        assertEquals(100, OrderRepo.sellList.peek().orderPrice)
+        assertEquals(0, OrderRepo.sellList.peek().orderExecutionLogs.size)
     }
 
     @Test
@@ -146,8 +147,8 @@ class TestOrderCreation {
 
         OrderServices.placeOrder("user",1, "SELL", 100)
 
-        assertEquals(1, DataStorage.sellList.size)
-        assertEquals(user.orders[0], DataStorage.sellList.peek())
+        assertEquals(1, OrderRepo.sellList.size)
+        assertEquals(user.orders[0], OrderRepo.sellList.peek())
     }
 
     @Test
@@ -196,11 +197,11 @@ class TestOrderCreation {
 
         OrderServices.placeOrder("user",1, "SELL", 100,"PERFORMANCE")
 
-        assertEquals("Unfilled", DataStorage.performanceSellList.peek().orderStatus)
-        assertEquals(1, DataStorage.performanceSellList.peek().orderQuantity)
-        assertEquals("SELL", DataStorage.performanceSellList.peek().orderType)
-        assertEquals(100, DataStorage.performanceSellList.peek().orderPrice)
-        assertEquals(0, DataStorage.performanceSellList.peek().orderExecutionLogs.size)
+        assertEquals("Unfilled", OrderRepo.performanceSellList.peek().orderStatus)
+        assertEquals(1, OrderRepo.performanceSellList.peek().orderQuantity)
+        assertEquals("SELL", OrderRepo.performanceSellList.peek().orderType)
+        assertEquals(100, OrderRepo.performanceSellList.peek().orderPrice)
+        assertEquals(0, OrderRepo.performanceSellList.peek().orderExecutionLogs.size)
     }
 
     @Test
@@ -212,8 +213,8 @@ class TestOrderCreation {
         OrderServices.placeOrder("user",1, "SELL", 100,"PERFORMANCE")
 
 
-        assertEquals(1, DataStorage.performanceSellList.size)
-        assertEquals(user.orders[0], DataStorage.performanceSellList.peek())
+        assertEquals(1, OrderRepo.performanceSellList.size)
+        assertEquals(user.orders[0], OrderRepo.performanceSellList.peek())
     }
 
     @Test

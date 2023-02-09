@@ -3,6 +3,7 @@ package services
 import models.DataStorage
 import models.Order
 import models.OrderExecutionLogs
+import repo.OrderRepo
 import repo.UserRepo
 import java.math.BigInteger
 import kotlin.math.min
@@ -22,23 +23,10 @@ class Util {
             return DataStorage.orderExecutionId++
         }
 
-        @Synchronized
-        fun addOrderToBuyList(order: Order) {
-            DataStorage.buyList.add(order)
-        }
 
-        @Synchronized
-        fun addOrderToSellList(order: Order) {
-            DataStorage.sellList.add(order)
-        }
-
-        @Synchronized
-        fun addOrderToPerformanceSellList(order: Order) {
-            DataStorage.performanceSellList.add(order)
-        }
 
         fun matchOrders() {
-            val buyOrders = DataStorage.buyList
+            val buyOrders = OrderRepo.buyList
             if(buyOrders.isEmpty()) return
             val currentBuyOrder = buyOrders.poll()
             matchWithPerformanceSellOrders(currentBuyOrder)
@@ -49,7 +37,7 @@ class Util {
         }
 
         private fun matchWithPerformanceSellOrders(buyOrder: Order) {
-            val performanceSellOrders = DataStorage.performanceSellList.iterator()
+            val performanceSellOrders = OrderRepo.performanceSellList.iterator()
             while (performanceSellOrders.hasNext() && buyOrder.remainingOrderQuantity > 0) {
                 val currentPerformanceSellOrder = performanceSellOrders.next()
                 processOrder(buyOrder, currentPerformanceSellOrder, true)
@@ -59,7 +47,7 @@ class Util {
         }
 
         private fun matchWithNonPerformanceSellOrders(buyOrder: Order) {
-            val sellOrders = DataStorage.sellList
+            val sellOrders = OrderRepo.sellList
             while (sellOrders.isNotEmpty() && buyOrder.remainingOrderQuantity > 0) {
                 val currentSellOrder = sellOrders.poll()
 

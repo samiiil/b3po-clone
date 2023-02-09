@@ -15,6 +15,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import repo.OrderRepo
 import repo.UserRepo
 import services.saveUser
 
@@ -44,9 +45,9 @@ WalletControllerTest {
         UserRepo.userList.clear()
         UserRepo.registeredEmails.clear()
         UserRepo.registeredPhoneNumbers.clear()
-        DataStorage.buyList.clear()
-        DataStorage.sellList.clear()
-        DataStorage.performanceSellList.clear()
+        OrderRepo.buyList.clear()
+        OrderRepo.sellList.clear()
+        OrderRepo.performanceSellList.clear()
         DataStorage.orderId = 1L
         DataStorage.orderExecutionId = 1L
     }

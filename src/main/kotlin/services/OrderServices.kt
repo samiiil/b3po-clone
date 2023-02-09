@@ -3,6 +3,7 @@ package services
 import models.DataStorage
 import models.Order
 import models.User
+import repo.OrderRepo
 import repo.UserRepo
 import services.Util
 import validations.OrderValidations
@@ -40,7 +41,7 @@ class OrderServices {
             user.moveFreeMoneyToLockedMoney(transactionAmount)
             val newOrder = Order(user.username, Util.generateOrderId(), orderQuantity, orderPrice, "BUY")
             user.orders.add(newOrder)
-            Util.addOrderToBuyList(newOrder)
+            OrderRepo.addBuyOrderToList(newOrder)
         }
 
         fun addSellOrder(user:User,orderQuantity: Long, orderPrice: Long, typeOfESOP: String){
@@ -51,11 +52,11 @@ class OrderServices {
             if(typeOfESOP == "PERFORMANCE") {
 
                 user.moveFreePerformanceInventoryToLockedPerformanceInventory(orderQuantity)
-                Util.addOrderToPerformanceSellList(newOrder)
+               OrderRepo.addSellOrderToList(newOrder)
             }
             else if(typeOfESOP == "NON-PERFORMANCE") {
                 user.moveFreeInventoryToLockedInventory(orderQuantity)
-                Util.addOrderToSellList(newOrder)
+                OrderRepo.addPerformanceSellOrderToList(newOrder)
             }
         }
 

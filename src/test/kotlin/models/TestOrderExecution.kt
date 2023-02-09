@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import repo.OrderRepo
 import repo.UserRepo
 import services.saveUser
 import kotlin.math.roundToLong
@@ -27,9 +28,9 @@ class TestOrderExecution {
         UserRepo.userList.clear()
         UserRepo.registeredEmails.clear()
         UserRepo.registeredPhoneNumbers.clear()
-        DataStorage.buyList.clear()
-        DataStorage.sellList.clear()
-        DataStorage.performanceSellList.clear()
+        OrderRepo.buyList.clear()
+        OrderRepo.sellList.clear()
+        OrderRepo.performanceSellList.clear()
         DataStorage.orderId = 1
         DataStorage.orderExecutionId = 1
     }
@@ -45,10 +46,8 @@ class TestOrderExecution {
         OrderServices.placeOrder("amy",15, "SELL", 10)
 
 
-
-
-        assert(DataStorage.buyList.isEmpty())
-        assert(DataStorage.sellList.isEmpty())
+        assert(OrderRepo.buyList.isEmpty())
+        assert(OrderRepo.sellList.isEmpty())
         assertEquals(9850, buyer.getFreeMoney())
         assertEquals(15, buyer.getFreeInventory())
         assertEquals(expectedSellerWallet, seller.getFreeMoney())

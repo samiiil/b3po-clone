@@ -11,9 +11,6 @@ class DataStorage {
         var orderId: Long = 1L
         var orderExecutionId = 1L
 
-        val buyList = PriorityQueue<Order>(BuyOrderingComparator)
-        val sellList = PriorityQueue<Order>(SellOrderingComparator)
-        val performanceSellList = LinkedList<Order>()
 
         const val COMMISSION_FEE_PERCENTAGE = 2.0F
         const val MAX_AMOUNT = 10_000_000
