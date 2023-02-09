@@ -96,16 +96,17 @@ class OrderServices {
         }
 
         private fun matchWithNonPerformanceSellOrders(buyOrder: Order) {
-            val sellOrders = OrderRepo.sellList
-            while (sellOrders.isNotEmpty() && buyOrder.remainingOrderQuantity > 0) {
-                val currentSellOrder = sellOrders.poll()
 
-                //Sell list is sorted to have best deals come first.
-                //If the top of the heap is not good enough, no point searching further
+            while (buyOrder.remainingOrderQuantity > 0) {
+
+                val currentSellOrder = OrderRepo.getSellOrderToMatch() ?: break
+
                 if (currentSellOrder.orderPrice > buyOrder.orderPrice) break
+
                 processOrder(buyOrder, currentSellOrder, false)
+
                 if (currentSellOrder.remainingOrderQuantity > 0)
-                    sellOrders.add(currentSellOrder)
+                    OrderRepo.addSellOrderToList(currentSellOrder)
             }
         }
 

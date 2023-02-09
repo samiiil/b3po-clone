@@ -29,6 +29,11 @@ class OrderRepo {
                 return null
             return buyList.poll()
         }
+        fun getSellOrderToMatch(): Order? {
+            if(sellList.isEmpty())
+                return null
+            return sellList.poll()
+        }
 
     }
 }
