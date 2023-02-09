@@ -6,6 +6,7 @@ import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Post
 import models.CreateOrderInput
+import models.createOrderResponse
 import repo.UserRepo
 import services.OrderServices
 import validations.RequestValidations
@@ -14,16 +15,11 @@ import validations.UserValidations
 @Controller("/user")
 class OrderController {
     @Post("/{userName}/createOrder")
-    fun createOrder(userName: String, @Body createOrderInput: CreateOrderInput): HttpResponse<*> {
-        var response: Map<String, *>?
+    fun createOrder(userName: String, @Body createOrderInput: CreateOrderInput): HttpResponse<createOrderResponse> {
 
-        response = UserValidations.validateUser(userName)
-        if (response != null)
-            return HttpResponse.status<Any>(HttpStatus.UNAUTHORIZED).body(response)
+        UserValidations.validateUser(userName)
 
-        response = RequestValidations.checkIfRequestIsValid(createOrderInput)
-        if (response != null)
-            return HttpResponse.status<Any>(HttpStatus.UNAUTHORIZED).body(response)
+        RequestValidations.checkIfRequestIsValid(createOrderInput)
 
         val orderQuantity: Long = createOrderInput.quantity!!.toLong()
         val orderType: String = createOrderInput.orderType!!.trim().uppercase()
@@ -31,7 +27,7 @@ class OrderController {
         val typeOfESOP: String = (createOrderInput.esopType ?: "NON-PERFORMANCE").trim().uppercase()
 
         val user = UserRepo.getUser(userName)!!
-        response = OrderServices.placeOrder(user, orderQuantity, orderType, orderPrice, typeOfESOP)
+        val response = OrderServices.placeOrder(user, orderQuantity, orderType, orderPrice, typeOfESOP)
 
         return HttpResponse.status<Any>(HttpStatus.OK).body(response)
     }

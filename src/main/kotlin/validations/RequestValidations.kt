@@ -1,37 +1,28 @@
 package validations
 
+import exception.ValidationException
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import models.CreateOrderInput
+import models.ErrorResponse
 
 class RequestValidations {
 
     companion object {
 
-        fun checkIfRequestIsValid(body: CreateOrderInput): Map<String, ArrayList<String>>? {
-
+        fun checkIfRequestIsValid(body: CreateOrderInput){
             var response: Map<String, ArrayList<String>>?
-
-            response= checkIfFieldsMissingInOrderReq(body)
-
-            if(response!=null)
-                return response
-
-            response= checkIfOrderRequestDataIsValid(body)
-            if(response!=null)
-                return response
-
-            return null
+            checkIfFieldsMissingInOrderReq(body)
+            checkIfOrderRequestDataIsValid(body)
         }
 
 
 
 
-        fun checkIfFieldsMissingInOrderReq(body: CreateOrderInput): Map<String, ArrayList<String>>? {
+        fun checkIfFieldsMissingInOrderReq(body: CreateOrderInput){
 
             val errorMessages: ArrayList<String> = ArrayList()
 
-            var response: Map<String, ArrayList<String>>?
 
             if (body.orderType.isNullOrBlank())
                 errorMessages.add("orderType is missing, orderType should be BUY or SELL.")
@@ -43,31 +34,23 @@ class RequestValidations {
                 errorMessages.add("esopType is missing, SELL order requires esopType.")
             }
 
-            if (errorMessages.isNotEmpty()) {
-                response = mapOf("error" to errorMessages)
-                return response
-            }
-            return null
+            if (errorMessages.isNotEmpty())
+                throw ValidationException( ErrorResponse(errorMessages))
         }
 
 
-        fun checkIfOrderRequestDataIsValid(body: CreateOrderInput): Map<String, ArrayList<String>>? {
+        fun checkIfOrderRequestDataIsValid(body: CreateOrderInput) {
 
             val errorMessages: ArrayList<String> = ArrayList()
-            var response: Map<String, ArrayList<String>>?
 
             errorMessages.addAll(isOrderTypeValid(body.orderType!!))
 
             if(body.esopType!=null)
                 errorMessages.addAll(isESOPTypeValid(body.esopType))
 
-
-
             if (errorMessages.isNotEmpty()) {
-                response = mapOf("error" to errorMessages)
-                return response
+                throw ValidationException(ErrorResponse(errorMessages))
             }
-            return null
         }
 
 

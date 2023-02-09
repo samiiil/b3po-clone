@@ -1,9 +1,6 @@
 package services
 
-import models.DataStorage
-import models.Order
-import models.OrderExecutionLogs
-import models.User
+import models.*
 import repo.OrderRepo
 import repo.UserRepo
 import validations.OrderValidations
@@ -12,7 +9,7 @@ import kotlin.math.roundToLong
 
 class OrderServices {
     companion object {
-        fun placeOrder(user: User, orderQuantity: Long, orderType: String, orderPrice: Long, typeOfESOP: String = "NON-PERFORMANCE"): MutableMap<String, Any> {
+        fun placeOrder(user: User, orderQuantity: Long, orderType: String, orderPrice: Long, typeOfESOP: String = "NON-PERFORMANCE"): createOrderResponse {
 
             if (orderType == "BUY") {
                 OrderValidations.throwExceptionIfInvalidBuyOrder(user, orderQuantity, orderPrice)
@@ -25,12 +22,7 @@ class OrderServices {
 
             matchOrders()
 
-            val res = mutableMapOf<String, Any>()
-            res["quantity"] = orderQuantity
-            res["order_type"] = orderType
-            res["price"] = orderPrice
-
-            return res
+            return createOrderResponse(orderQuantity,orderType,orderPrice,typeOfESOP)
         }
 
 
