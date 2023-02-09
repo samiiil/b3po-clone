@@ -7,8 +7,8 @@ import validations.OrderValidations
 import kotlin.math.min
 import kotlin.math.roundToLong
 
-class OrderServices {
-    companion object {
+object OrderServices {
+
         fun placeOrder(user: User, orderQuantity: Long, orderType: String, orderPrice: Long, typeOfESOP: String = "NON-PERFORMANCE"): createOrderResponse {
 
             if (orderType == "BUY") {
@@ -115,5 +115,4 @@ class OrderServices {
         private fun findOrderQuantity(buyOrder: Order, sellOrder: Order): Long {
             return min(buyOrder.remainingOrderQuantity, sellOrder.remainingOrderQuantity)
         }
-    }
 }

@@ -2,26 +2,29 @@ package services
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import services.Validations.Companion.validateFirstName
+import services.Validations.validateFirstName
 
 class TestFirstNameValidations {
     @Test
-    fun `should accept first name with spaces`(){
-       val errorList = validateFirstName("Jake Peralta")
+    fun `should accept first name with spaces`() {
+        val errorList = validateFirstName("Jake Peralta")
 
         assert(errorList.isEmpty())
     }
 
     @Test
-    fun `first name cannot contain digits`(){
+    fun `first name cannot contain digits`() {
         val errorList = validateFirstName("123")
 
         assertEquals(1, errorList.size)
-        assertEquals("Invalid first name. First name should only contain characters and cannot have more than one continuous space.", errorList[0])
+        assertEquals(
+            "Invalid first name. First name should only contain characters and cannot have more than one continuous space.",
+            errorList[0]
+        )
     }
 
     @Test
-    fun `first name cannot be less than three characters`(){
+    fun `first name cannot be less than three characters`() {
         val errorList = validateFirstName("aa")
 
         assertEquals(1, errorList.size)
@@ -33,7 +36,10 @@ class TestFirstNameValidations {
         val errorList = validateFirstName("Jake  Peralt   a")
 
         assertEquals(1, errorList.size)
-        assertEquals("Invalid first name. First name should only contain characters and cannot have more than one continuous space.", errorList[0])
+        assertEquals(
+            "Invalid first name. First name should only contain characters and cannot have more than one continuous space.",
+            errorList[0]
+        )
     }
 
     @Test
@@ -44,11 +50,12 @@ class TestFirstNameValidations {
     }
 
     @Test
-    fun `first name can contain mark characters`(){
+    fun `first name can contain mark characters`() {
         val errorList = validateFirstName("नमस्ते")
 
         assert(errorList.isEmpty())
     }
+
     @Test
     fun `first name cannot be null`() {
         val errorList = validateFirstName(null)
