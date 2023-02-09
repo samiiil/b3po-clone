@@ -16,8 +16,8 @@ class TestUserRegistration {
         OrderRepo.buyList.clear()
         OrderRepo.sellList.clear()
         OrderRepo.performanceSellList.clear()
-        DataStorage.orderId = 1
-        DataStorage.orderExecutionId = 1
+        OrderRepo.orderId = 1
+        OrderRepo.orderExecutionId = 1
     }
 
     @Test

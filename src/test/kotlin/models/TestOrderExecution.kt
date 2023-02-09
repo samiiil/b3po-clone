@@ -31,8 +31,8 @@ class TestOrderExecution {
         OrderRepo.buyList.clear()
         OrderRepo.sellList.clear()
         OrderRepo.performanceSellList.clear()
-        DataStorage.orderId = 1
-        DataStorage.orderExecutionId = 1
+        OrderRepo.orderId = 1
+        OrderRepo.orderExecutionId = 1
     }
     @Test
     fun `multiple buy orders by one user and one sell order by another user to fulfill them completely`(){

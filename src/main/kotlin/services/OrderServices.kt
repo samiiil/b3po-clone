@@ -39,7 +39,7 @@ class OrderServices {
             val transactionAmount = orderQuantity * orderPrice
             user.moveFreeMoneyToLockedMoney(transactionAmount)
 
-            val newOrder = Order(user.username, generateOrderId(), orderQuantity, orderPrice, "BUY")
+            val newOrder = Order(user.username, OrderRepo.generateOrderId(), orderQuantity, orderPrice, "BUY")
             user.addOrderToUser(newOrder)
 
             OrderRepo.addBuyOrderToList(newOrder)
@@ -47,7 +47,7 @@ class OrderServices {
 
         private fun placeSellOrder(user: User, orderQuantity: Long, orderPrice: Long, typeOfESOP: String) {
 
-            val newOrder = Order(user.getUserName(user), generateOrderId(), orderQuantity, orderPrice, "SELL")
+            val newOrder = Order(user.getUserName(user), OrderRepo.generateOrderId(), orderQuantity, orderPrice, "SELL")
             user.addOrderToUser(newOrder)
             if (typeOfESOP == "PERFORMANCE") {
 
@@ -112,20 +112,13 @@ class OrderServices {
 
             DataStorage.addTransactionFee(orderFee.toBigInteger())
 
-            val orderExecutionLog = OrderExecutionLogs(generateOrderExecutionId(), orderExecutionPrice, orderQuantity)
+            val orderExecutionLog = OrderExecutionLogs(OrderRepo.generateOrderExecutionId(), orderExecutionPrice, orderQuantity)
             sellOrder.addOrderExecutionLogs(orderExecutionLog)
             buyOrder.addOrderExecutionLogs(orderExecutionLog)
         }
 
-        @Synchronized
-        private fun generateOrderId(): Long {
-            return DataStorage.orderId++
-        }
 
-        @Synchronized
-        private fun generateOrderExecutionId(): Long {
-            return DataStorage.orderExecutionId++
-        }
+
 
         private fun findOrderQuantity(buyOrder: Order, sellOrder: Order): Long {
             return min(buyOrder.remainingOrderQuantity, sellOrder.remainingOrderQuantity)

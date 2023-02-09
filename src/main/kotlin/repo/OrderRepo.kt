@@ -1,14 +1,20 @@
 package repo
 
+import models.DataStorage
 import models.Order
 import services.BuyOrderingComparator
 import services.SellOrderingComparator
 import java.util.*
 
 object OrderRepo {
+
+    var orderId: Long = 1L
+    var orderExecutionId = 1L
+
     val buyList = PriorityQueue(BuyOrderingComparator)
     val sellList = PriorityQueue(SellOrderingComparator)
     val performanceSellList = LinkedList<Order>()
+
 
     fun addBuyOrderToList(order: Order) {
         buyList.add(order)
@@ -32,6 +38,17 @@ object OrderRepo {
         if (sellList.isEmpty())
             return null
         return sellList.poll()
+    }
+
+    @Synchronized
+    fun generateOrderExecutionId(): Long {
+        return orderExecutionId++
+    }
+
+
+    @Synchronized
+    fun generateOrderId(): Long {
+        return orderId++
     }
 
 }

@@ -8,8 +8,6 @@ import java.util.*
 class DataStorage {
     companion object {
 
-        var orderId: Long = 1L
-        var orderExecutionId = 1L
 
 
         const val COMMISSION_FEE_PERCENTAGE = 2.0F

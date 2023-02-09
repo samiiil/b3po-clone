@@ -43,8 +43,8 @@ class TestFeeCollection {
         OrderRepo.buyList.clear()
         OrderRepo.sellList.clear()
         OrderRepo.performanceSellList.clear()
-        DataStorage.orderId = 1L
-        DataStorage.orderExecutionId = 1L
+        OrderRepo.orderId = 1L
+        OrderRepo.orderExecutionId = 1L
         DataStorage.TOTAL_FEE_COLLECTED = BigInteger.valueOf(0)
     }
 
