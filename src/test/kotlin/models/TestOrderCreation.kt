@@ -34,7 +34,8 @@ class TestOrderCreation {
 
 
 
-        OrderServices.placeOrder(user,1, "BUY", 100)
+        OrderServices.placeOrder(user, CreateOrderInput(1,"BUY",100))
+
 
 
 
@@ -46,7 +47,8 @@ class TestOrderCreation {
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
         UserRepo.userList["user"]=user
 
-        val exception = assertThrows(ValidationException::class.java){ OrderServices.placeOrder(user,1, "BUY", 100) }
+        val exception = assertThrows(ValidationException::class.java){ OrderServices.placeOrder(user, CreateOrderInput(1,"BUY",100))
+ }
         val errors = exception.errorResponse.error
 
         assertEquals("Insufficient balance in wallet", errors[0])
@@ -60,7 +62,8 @@ class TestOrderCreation {
         UserRepo.userList["user"]=user
         user.addMoneyToWallet(100)
 
-        OrderServices.placeOrder(user,1, "BUY", 100)
+        OrderServices.placeOrder(user, CreateOrderInput(1,"BUY",100))
+
         assertEquals(0, user.getFreeMoney())
         assertEquals(100, user.getLockedMoney())
     }
@@ -71,7 +74,8 @@ class TestOrderCreation {
         UserRepo.userList["user"]=user
         user.addMoneyToWallet(100)
 
-        OrderServices.placeOrder(user,1, "BUY", 100)
+        OrderServices.placeOrder(user, CreateOrderInput(1,"BUY",100))
+
 
         assertEquals("Unfilled", OrderRepo.buyList.peek().orderStatus)
         assertEquals(1, OrderRepo.buyList.peek().orderQuantity)
@@ -86,7 +90,8 @@ class TestOrderCreation {
         UserRepo.userList["user"]=user
         user.addMoneyToWallet(100)
 
-        OrderServices.placeOrder(user,1, "BUY", 100)
+        OrderServices.placeOrder(user, CreateOrderInput(1,"BUY",100))
+
         assertEquals(1, OrderRepo.buyList.size)
         assertEquals(user.orders[0], OrderRepo.buyList.peek())
     }
@@ -97,7 +102,8 @@ class TestOrderCreation {
         UserRepo.userList["user"]=user
         user.addEsopToInventory(1)
 
-        OrderServices.placeOrder(user,1, "SELL", 100)
+        OrderServices.placeOrder(user, CreateOrderInput(1,"SELL",100))
+
         assertEquals(1, user.orders.size)
     }
 
@@ -106,7 +112,8 @@ class TestOrderCreation {
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
         UserRepo.userList["user"]=user
 
-        val exception = assertThrows(ValidationException::class.java){   OrderServices.placeOrder(user,1, "SELL", 100) }
+        val exception = assertThrows(ValidationException::class.java){   OrderServices.placeOrder(user, CreateOrderInput(1,"SELL",100))
+ }
         val errors = exception.errorResponse.error
 
         assertEquals("Insufficient NON-PERFORMANCE ESOPs in inventory", errors[0])
@@ -120,7 +127,8 @@ class TestOrderCreation {
         UserRepo.userList["user"]=user
         user.addEsopToInventory(1)
 
-        OrderServices.placeOrder(user,1, "SELL", 100)
+        OrderServices.placeOrder(user, CreateOrderInput(1,"SELL",100))
+
         assertEquals(0, user.getFreeInventory())
         assertEquals(1, user.getLockedInventory())
     }
@@ -130,7 +138,8 @@ class TestOrderCreation {
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
         UserRepo.userList["user"]=user
         user.addEsopToInventory(1)
-        OrderServices.placeOrder(user,1, "SELL", 100)
+        OrderServices.placeOrder(user, CreateOrderInput(1,"SELL",100))
+
 
         assertEquals("Unfilled", OrderRepo.sellList.peek().orderStatus)
         assertEquals(1, OrderRepo.sellList.peek().orderQuantity)
@@ -145,7 +154,8 @@ class TestOrderCreation {
         UserRepo.userList["user"]=user
         user.addEsopToInventory(1)
 
-        OrderServices.placeOrder(user,1, "SELL", 100)
+        OrderServices.placeOrder(user, CreateOrderInput(1,"SELL",100))
+
 
         assertEquals(1, OrderRepo.sellList.size)
         assertEquals(user.orders[0], OrderRepo.sellList.peek())
@@ -157,7 +167,8 @@ class TestOrderCreation {
         UserRepo.userList["user"]=user
         user.addEsopToInventory(1, "PERFORMANCE")
 
-        OrderServices.placeOrder(user,1, "SELL", 100,"PERFORMANCE")
+        OrderServices.placeOrder(user, CreateOrderInput(1,"SELL",100,"PERFORMANCE"))
+
 
         assertEquals(1, user.orders.size)
     }
@@ -168,7 +179,8 @@ class TestOrderCreation {
         UserRepo.userList["user"]=user
 
         val exception = assertThrows(ValidationException::class.java){
-            OrderServices.placeOrder(user,1, "SELL", 100,"PERFORMANCE")
+            OrderServices.placeOrder(user, CreateOrderInput(1,"SELL",100,"PERFORMANCE"))
+
         }
         val errors = exception.errorResponse.error
 
@@ -183,7 +195,8 @@ class TestOrderCreation {
         UserRepo.userList["user"]=user
         user.addEsopToInventory(1, "PERFORMANCE")
 
-        OrderServices.placeOrder(user,1, "SELL", 100,"PERFORMANCE")
+        OrderServices.placeOrder(user, CreateOrderInput(1,"SELL",100,"PERFORMANCE"))
+
 
         assertEquals(0, user.getFreePerformanceInventory())
         assertEquals(1, user.getLockedPerformanceInventory())
@@ -195,7 +208,8 @@ class TestOrderCreation {
         UserRepo.userList["user"]=user
         user.addEsopToInventory(1, "PERFORMANCE")
 
-        OrderServices.placeOrder(user,1, "SELL", 100,"PERFORMANCE")
+        OrderServices.placeOrder(user, CreateOrderInput(1,"SELL",100,"PERFORMANCE"))
+
 
         assertEquals("Unfilled", OrderRepo.performanceSellList.peek().orderStatus)
         assertEquals(1, OrderRepo.performanceSellList.peek().orderQuantity)
@@ -210,7 +224,8 @@ class TestOrderCreation {
         UserRepo.userList["user"]=user
         user.addEsopToInventory(1, "PERFORMANCE")
 
-        OrderServices.placeOrder(user,1, "SELL", 100,"PERFORMANCE")
+        OrderServices.placeOrder(user, CreateOrderInput(1,"SELL",100,"PERFORMANCE"))
+
 
 
         assertEquals(1, OrderRepo.performanceSellList.size)
@@ -234,7 +249,8 @@ class TestOrderCreation {
 
         user.addMoneyToWallet(100)
 
-        OrderServices.placeOrder(user,1, "BUY", 100)
+        OrderServices.placeOrder(user, CreateOrderInput(1,"BUY",100))
+
 
         val orderDetails = user.getOrderDetails()
 
@@ -254,8 +270,10 @@ class TestOrderCreation {
         saveUser(seller)
         buyer.addMoneyToWallet(200)
         seller.addEsopToInventory(1)
-        OrderServices.placeOrder(buyer,2, "BUY", 100)
-        OrderServices.placeOrder(seller,1, "SELL", 100)
+        OrderServices.placeOrder(buyer, CreateOrderInput(2,"BUY",100))
+
+        OrderServices.placeOrder(seller, CreateOrderInput(1,"SELL",100))
+
 
 
         val orderDetails = buyer.getOrderDetails()
@@ -278,8 +296,10 @@ class TestOrderCreation {
         buyer.addMoneyToWallet(200)
         seller.addEsopToInventory(1)
 
-        OrderServices.placeOrder(buyer,2, "BUY", 100)
-        OrderServices.placeOrder(seller,1, "SELL", 100)
+        OrderServices.placeOrder(buyer, CreateOrderInput(2,"BUY",100))
+
+        OrderServices.placeOrder(seller, CreateOrderInput(1,"SELL",100))
+
 
 
         val orderDetails = seller.getOrderDetails()
@@ -312,7 +332,7 @@ class TestOrderCreation {
 
 
 
-        OrderServices.placeOrder(user,1, "SELL", 10,"PERFORMANCE")
+        OrderServices.placeOrder(user,CreateOrderInput(1, "SELL", 10,"PERFORMANCE"))
 
         assertEquals(expected,user.orders[0].toString())
     }
@@ -325,7 +345,7 @@ class TestOrderCreation {
         user.addMoneyToWallet(DataStorage.MAX_AMOUNT-10L)
         user.addEsopToInventory(1)
         val exception = assertThrows(ValidationException::class.java) {
-            OrderServices.placeOrder(user,1, "SELL", 15)
+            OrderServices.placeOrder(user,CreateOrderInput(1, "SELL", 15))
         }
 
         val errors = exception.errorResponse.error
@@ -342,7 +362,7 @@ class TestOrderCreation {
         user.addEsopToInventory(DataStorage.MAX_QUANTITY-10L)
         user.addMoneyToWallet(150)
 
-        val exception = assertThrows(ValidationException::class.java){  OrderServices.placeOrder(user,15, "BUY", 10)
+        val exception = assertThrows(ValidationException::class.java){  OrderServices.placeOrder(user,CreateOrderInput(15, "BUY", 10))
         }
         val errors = exception.errorResponse.error
 

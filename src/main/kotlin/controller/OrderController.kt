@@ -21,15 +21,8 @@ class OrderController {
 
         RequestValidations.checkIfRequestIsValid(createOrderInput)
 
-        val orderQuantity: Long = createOrderInput.quantity!!.toLong()
-        val orderType: String = createOrderInput.orderType!!.trim().uppercase()
-        val orderPrice: Long = createOrderInput.price!!.toLong()
-        val typeOfESOP: String = (createOrderInput.esopType ?: "NON-PERFORMANCE").trim().uppercase()
-
         val user = UserRepo.getUser(userName)!!
-        val response = OrderServices.placeOrder(user, orderQuantity, orderType, orderPrice, typeOfESOP)
-
-
+        val response = OrderServices.placeOrder(user, createOrderInput)
 
         return HttpResponse.status<Any>(HttpStatus.OK).body(response)
     }

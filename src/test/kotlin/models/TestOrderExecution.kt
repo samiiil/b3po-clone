@@ -40,10 +40,13 @@ class TestOrderExecution {
         val seller = UserRepo.userList["amy"]!!
         val expectedSellerWallet = (150*(1-DataStorage.COMMISSION_FEE_PERCENTAGE*0.01)).roundToLong()
 
-        OrderServices.placeOrder(buyer,5, "BUY", 10)
-        OrderServices.placeOrder(buyer,5, "BUY", 10)
-        OrderServices.placeOrder(buyer,5, "BUY", 10)
-        OrderServices.placeOrder(seller,15, "SELL", 10)
+        OrderServices.placeOrder(buyer, CreateOrderInput(5,"BUY",10))
+
+        OrderServices.placeOrder(buyer, CreateOrderInput(5,"BUY",10))
+
+        OrderServices.placeOrder(buyer, CreateOrderInput(5,"BUY",10))
+
+        OrderServices.placeOrder(seller, CreateOrderInput(15,"SELL",10))
 
 
         assert(OrderRepo.buyList.isEmpty())
@@ -60,8 +63,8 @@ class TestOrderExecution {
         val seller = UserRepo.userList["amy"]!!
         val expectedSellerWallet = (5*(1-DataStorage.COMMISSION_FEE_PERCENTAGE*0.01)).roundToLong()
 
-        OrderServices.placeOrder(buyer,1, "BUY", 10)
-        OrderServices.placeOrder(seller,1, "SELL", 5)
+        OrderServices.placeOrder(buyer, CreateOrderInput(1,"BUY",10))
+        OrderServices.placeOrder(seller, CreateOrderInput(1,"SELL",5))
 
 
 
@@ -75,9 +78,9 @@ class TestOrderExecution {
         val seller = UserRepo.userList["amy"]!!
 
 
-        OrderServices.placeOrder(seller,1, "SELL", 10)
-        OrderServices.placeOrder(seller,1, "SELL", 5)
-        OrderServices.placeOrder(buyer,1, "BUY", 10)
+        OrderServices.placeOrder(seller, CreateOrderInput(1,"SELL",10))
+        OrderServices.placeOrder(seller, CreateOrderInput(1,"SELL",5))
+        OrderServices.placeOrder(buyer, CreateOrderInput(1,"BUY",10))
 
 
 
@@ -96,9 +99,9 @@ class TestOrderExecution {
         val seller = UserRepo.userList["amy"]!!
 
 
-        OrderServices.placeOrder(buyer,1, "BUY", 5)
-        OrderServices.placeOrder(buyer,1, "BUY", 10)
-        OrderServices.placeOrder(seller,1, "SELL", 5)
+        OrderServices.placeOrder(buyer,CreateOrderInput(1, "BUY", 5))
+        OrderServices.placeOrder(buyer, CreateOrderInput(1,"BUY",10))
+        OrderServices.placeOrder(seller, CreateOrderInput(1,"SELL",5))
 
 
 
@@ -115,9 +118,9 @@ class TestOrderExecution {
         val buyer = UserRepo.userList["jake"]!!
         val seller = UserRepo.userList["amy"]!!
 
-        OrderServices.placeOrder(seller,1, "SELL", 5,"NON-PERFORMANCE")
-        OrderServices.placeOrder(seller,1, "SELL", 10,"PERFORMANCE")
-        OrderServices.placeOrder(buyer,1, "BUY", 10)
+        OrderServices.placeOrder(seller,CreateOrderInput(1, "SELL", 5,"NON-PERFORMANCE"))
+        OrderServices.placeOrder(seller,CreateOrderInput(1, "SELL", 10,"PERFORMANCE"))
+        OrderServices.placeOrder(buyer, CreateOrderInput(1,"BUY",10))
 
 
 
@@ -137,8 +140,8 @@ class TestOrderExecution {
         val seller = UserRepo.userList["amy"]!!
 
 
-        OrderServices.placeOrder(seller,1, "SELL", 10,"PERFORMANCE")
-        OrderServices.placeOrder(buyer,1, "BUY", 10)
+        OrderServices.placeOrder(seller,CreateOrderInput(1, "SELL", 10,"PERFORMANCE"))
+        OrderServices.placeOrder(buyer, CreateOrderInput(1,"BUY",10))
 
 
 
@@ -153,9 +156,9 @@ class TestOrderExecution {
         val buyer = UserRepo.userList["jake"]!!
         val seller = UserRepo.userList["amy"]!!
 
-        OrderServices.placeOrder(seller,1, "SELL", 10,"PERFORMANCE")
-        OrderServices.placeOrder(seller,1, "SELL", 5,"PERFORMANCE")
-        OrderServices.placeOrder(buyer,1, "BUY", 10)
+        OrderServices.placeOrder(seller,CreateOrderInput(1, "SELL", 10,"PERFORMANCE"))
+        OrderServices.placeOrder(seller,CreateOrderInput(1, "SELL", 5,"PERFORMANCE"))
+        OrderServices.placeOrder(buyer, CreateOrderInput(1,"BUY",10))
 
 
 

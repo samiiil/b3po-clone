@@ -9,10 +9,16 @@ import kotlin.math.roundToLong
 
 object OrderServices {
 
-        fun placeOrder(user: User, orderQuantity: Long, orderType: String, orderPrice: Long, typeOfESOP: String = "NON-PERFORMANCE"): createOrderResponse {
+        fun placeOrder(user: User, createOrderInput:CreateOrderInput): createOrderResponse {
 
+
+            val orderQuantity: Long = createOrderInput.quantity!!.toLong()
+            val orderType: String = createOrderInput.orderType!!.trim().uppercase()
+            val orderPrice: Long = createOrderInput.price!!.toLong()
+            val typeOfESOP: String = (createOrderInput.esopType ?: "NON-PERFORMANCE").trim().uppercase()
             var orderId: Long? =null
             var esopType:String?=null
+           
             if (orderType == "BUY") {
                 OrderValidations.throwExceptionIfInvalidBuyOrder(user, orderQuantity, orderPrice)
                 orderId=placeBuyOrder(user, orderQuantity, orderPrice)

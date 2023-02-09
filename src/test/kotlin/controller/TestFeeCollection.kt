@@ -6,6 +6,7 @@ import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
+import models.CreateOrderInput
 import models.DataStorage
 import models.FeeResponse
 import models.User
@@ -70,8 +71,8 @@ class TestFeeCollection {
 
 
 
-        OrderServices.placeOrder(buyer,1,"BUY",100)
-        OrderServices.placeOrder(seller,1,"SELL",100)
+        OrderServices.placeOrder(buyer,CreateOrderInput(1,"BUY",100))
+        OrderServices.placeOrder(seller,CreateOrderInput(1,"SELL",100))
         val request = HttpRequest.GET<FeeResponse>("/fees")
 
         val response = client.toBlocking().retrieve(request, FeeResponse::class.java)
@@ -90,8 +91,8 @@ class TestFeeCollection {
         saveUser(buyer)
         saveUser(seller)
 
-        OrderServices.placeOrder(buyer,1,"BUY",30)
-        OrderServices.placeOrder(seller,1,"SELL",30)
+        OrderServices.placeOrder(buyer, CreateOrderInput(1,"BUY",30))
+        OrderServices.placeOrder(seller,CreateOrderInput(1,"SELL",30))
 
         val request = HttpRequest.GET<FeeResponse>("/fees")
 
