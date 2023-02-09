@@ -18,7 +18,7 @@ object OrderServices {
             val typeOfESOP: String = (createOrderInput.esopType ?: "NON-PERFORMANCE").trim().uppercase()
             var orderId: Long? =null
             var esopType:String?=null
-           
+
             if (orderType == "BUY") {
                 OrderValidations.throwExceptionIfInvalidBuyOrder(user, orderQuantity, orderPrice)
                 orderId=placeBuyOrder(user, orderQuantity, orderPrice)
@@ -40,12 +40,12 @@ object OrderServices {
             val transactionAmount = orderQuantity * orderPrice
             user.moveFreeMoneyToLockedMoney(transactionAmount)
 
-            val newOrder = Order(user.username, OrderRepo.generateOrderId(), orderQuantity, orderPrice, "BUY")
+            val newOrder = Order(user.getUserName(), OrderRepo.generateOrderId(), orderQuantity, orderPrice, "BUY")
             user.addOrderToUser(newOrder)
 
             OrderRepo.addBuyOrderToList(newOrder)
 
-            return newOrder.orderId
+            return newOrder.getOrderId()
         }
 
         private fun placeSellOrder(user: User, orderQuantity: Long, orderPrice: Long, typeOfESOP: String): Long {
@@ -63,7 +63,7 @@ object OrderServices {
                 OrderRepo.addSellOrderToList(newOrder)
             }
 
-            return newOrder.orderId
+            return newOrder.getOrderId()
         }
 
 

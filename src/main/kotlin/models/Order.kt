@@ -11,6 +11,11 @@ class Order(
     val orderExecutionLogs: ArrayList<OrderExecutionLogs> = ArrayList()
     var remainingOrderQuantity: Long = orderQuantity
 
+
+    fun getOrderId(): Long {
+        return orderId
+    }
+
     fun addOrderExecutionLogs(orderExecuted: OrderExecutionLogs) {
         if (orderExecuted.orderExecutionQuantity == this.remainingOrderQuantity)
             this.orderStatus = "Filled"
