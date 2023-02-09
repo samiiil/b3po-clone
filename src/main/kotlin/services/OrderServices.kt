@@ -2,11 +2,15 @@ package services
 
 import models.DataStorage
 import models.Order
+import models.OrderExecutionLogs
 import models.User
 import repo.OrderRepo
 import repo.UserRepo
-import services.Util
 import validations.OrderValidations
+import java.math.BigInteger
+import kotlin.math.min
+import kotlin.math.roundToLong
+
 class OrderServices {
     companion object{
         fun placeOrder(userName:String,orderQuantity:Long, orderType:String, orderPrice:Long, typeOfESOP:String="NON-PERFORMANCE"): MutableMap<String, Any> {
@@ -23,7 +27,8 @@ class OrderServices {
 
                 addSellOrder(user,orderQuantity, orderPrice, typeOfESOP)
             }
-            Util.matchOrders()
+
+            matchOrders()
 
             val res = mutableMapOf<String, Any>()
             res["quantity"] = orderQuantity
@@ -48,19 +53,78 @@ class OrderServices {
 
             val newOrder = Order(user.username, Util.generateOrderId(), orderQuantity, orderPrice, "SELL")
             user.orders.add(newOrder)
-
             if(typeOfESOP == "PERFORMANCE") {
 
                 user.moveFreePerformanceInventoryToLockedPerformanceInventory(orderQuantity)
-               OrderRepo.addSellOrderToList(newOrder)
+                OrderRepo.addPerformanceSellOrderToList(newOrder)
+
             }
             else if(typeOfESOP == "NON-PERFORMANCE") {
+
                 user.moveFreeInventoryToLockedInventory(orderQuantity)
-                OrderRepo.addPerformanceSellOrderToList(newOrder)
+                OrderRepo.addSellOrderToList(newOrder)
+
             }
         }
 
 
+        fun matchOrders() {
+            val buyOrders = OrderRepo.buyList
+            if(buyOrders.isEmpty()) return
+            val currentBuyOrder = buyOrders.poll()
+            matchWithPerformanceSellOrders(currentBuyOrder)
+            matchWithNonPerformanceSellOrders(currentBuyOrder)
+
+            if(currentBuyOrder.remainingOrderQuantity > 0) buyOrders.add(currentBuyOrder)
+            else matchOrders()
+        }
+
+        private fun matchWithPerformanceSellOrders(buyOrder: Order) {
+            val performanceSellOrders = OrderRepo.performanceSellList.iterator()
+            while (performanceSellOrders.hasNext() && buyOrder.remainingOrderQuantity > 0) {
+                val currentPerformanceSellOrder = performanceSellOrders.next()
+                processOrder(buyOrder, currentPerformanceSellOrder, true)
+                if (currentPerformanceSellOrder.remainingOrderQuantity == 0L)
+                    performanceSellOrders.remove()
+            }
+        }
+
+        private fun matchWithNonPerformanceSellOrders(buyOrder: Order) {
+            val sellOrders = OrderRepo.sellList
+            while (sellOrders.isNotEmpty() && buyOrder.remainingOrderQuantity > 0) {
+                val currentSellOrder = sellOrders.poll()
+
+                //Sell list is sorted to have best deals come first.
+                //If the top of the heap is not good enough, no point searching further
+                if (currentSellOrder.orderPrice > buyOrder.orderPrice) break
+                processOrder(buyOrder, currentSellOrder, false)
+                if (currentSellOrder.remainingOrderQuantity > 0)
+                    sellOrders.add(currentSellOrder)
+            }
+        }
+
+        private fun processOrder(buyOrder: Order, sellOrder: Order, isPerformanceESOP: Boolean) {
+            if (sellOrder.orderPrice <= buyOrder.orderPrice) {
+                val orderExecutionPrice = sellOrder.orderPrice
+                val orderQuantity = findOrderQuantity(buyOrder, sellOrder)
+                val orderAmount = orderQuantity * orderExecutionPrice
+
+                UserRepo.updateSellerInventoryAndWallet(sellOrder, orderQuantity, orderExecutionPrice, isPerformanceESOP)
+                UserRepo.updateBuyerInventoryAndWallet(buyOrder, orderQuantity, orderExecutionPrice)
+
+                val orderFee = (orderAmount*DataStorage.COMMISSION_FEE_PERCENTAGE*0.01).roundToLong()
+                DataStorage.TOTAL_FEE_COLLECTED = DataStorage.TOTAL_FEE_COLLECTED + BigInteger.valueOf(orderFee)
+                val orderExecutionLog =
+                    OrderExecutionLogs(Util.generateOrderExecutionId(), orderExecutionPrice, orderQuantity)
+                sellOrder.addOrderExecutionLogs(orderExecutionLog)
+                buyOrder.addOrderExecutionLogs(orderExecutionLog)
+            }
+        }
+
+
+        private fun findOrderQuantity(buyOrder: Order, sellOrder: Order): Long {
+            return min(buyOrder.remainingOrderQuantity, sellOrder.remainingOrderQuantity)
+        }
 
 
     }
