@@ -24,6 +24,11 @@ class OrderRepo {
             performanceSellList.add(order)
         }
 
+        fun getBuyOrderToMatch(): Order? {
+            if(buyList.isEmpty())
+                return null
+            return buyList.poll()
+        }
 
     }
 }

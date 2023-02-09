@@ -22,6 +22,11 @@ class Order(
         orderExecutionLogs.add(orderExecuted)
     }
 
+
+    fun getRemainingQtyOfOrder(): Long {
+        return remainingOrderQuantity
+    }
+
     override fun toString(): String {
         return "username:$userName\norderId:$orderId\norderQuantity:$orderQuantity\norderPrice:$orderPrice\norderType:$orderType\norderStatus:$orderStatus\nremainingQuantity:${remainingOrderQuantity}\n"
     }

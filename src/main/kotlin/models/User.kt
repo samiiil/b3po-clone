@@ -162,5 +162,9 @@ class User(
 
     }
 
+    fun addOrderToUser (order: Order){
+        orders.add(order)
+    }
+
 
 }

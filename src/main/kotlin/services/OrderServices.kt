@@ -12,20 +12,26 @@ import kotlin.math.min
 import kotlin.math.roundToLong
 
 class OrderServices {
-    companion object{
-        fun placeOrder(userName:String,orderQuantity:Long, orderType:String, orderPrice:Long, typeOfESOP:String="NON-PERFORMANCE"): MutableMap<String, Any> {
+    companion object {
+        fun placeOrder(
+            userName: String,
+            orderQuantity: Long,
+            orderType: String,
+            orderPrice: Long,
+            typeOfESOP: String = "NON-PERFORMANCE"
+        ): MutableMap<String, Any> {
 
-            val user=UserRepo.getUser(userName)!!
+            val user = UserRepo.getUser(userName)!!
 
             if (orderType == "BUY") {
-                OrderValidations.throwExceptionIfInvalidBuyOrder(userName,orderQuantity, orderPrice)
+                OrderValidations.throwExceptionIfInvalidBuyOrder(userName, orderQuantity, orderPrice)
 
-                addBuyOrder(user,orderQuantity, orderPrice)
+                placeBuyOrder(user, orderQuantity, orderPrice)
 
             } else if (orderType == "SELL") {
-                OrderValidations.throwExceptionIfInvalidSellOrder(userName,typeOfESOP,orderQuantity,orderPrice)
+                OrderValidations.throwExceptionIfInvalidSellOrder(userName, typeOfESOP, orderQuantity, orderPrice)
 
-                addSellOrder(user,orderQuantity, orderPrice, typeOfESOP)
+                placeSellOrder(user, orderQuantity, orderPrice, typeOfESOP)
             }
 
             matchOrders()
@@ -39,44 +45,44 @@ class OrderServices {
         }
 
 
-
-        fun addBuyOrder(user: User,orderQuantity: Long, orderPrice: Long){
+        fun placeBuyOrder(user: User, orderQuantity: Long, orderPrice: Long) {
 
             val transactionAmount = orderQuantity * orderPrice
             user.moveFreeMoneyToLockedMoney(transactionAmount)
+
             val newOrder = Order(user.username, Util.generateOrderId(), orderQuantity, orderPrice, "BUY")
-            user.orders.add(newOrder)
+            user.addOrderToUser(newOrder)
+
             OrderRepo.addBuyOrderToList(newOrder)
         }
 
-        fun addSellOrder(user:User,orderQuantity: Long, orderPrice: Long, typeOfESOP: String){
+        fun placeSellOrder(user: User, orderQuantity: Long, orderPrice: Long, typeOfESOP: String) {
 
             val newOrder = Order(user.username, Util.generateOrderId(), orderQuantity, orderPrice, "SELL")
-            user.orders.add(newOrder)
-            if(typeOfESOP == "PERFORMANCE") {
+            user.addOrderToUser(newOrder)
+            if (typeOfESOP == "PERFORMANCE") {
 
                 user.moveFreePerformanceInventoryToLockedPerformanceInventory(orderQuantity)
                 OrderRepo.addPerformanceSellOrderToList(newOrder)
 
-            }
-            else if(typeOfESOP == "NON-PERFORMANCE") {
+            } else if (typeOfESOP == "NON-PERFORMANCE") {
 
                 user.moveFreeInventoryToLockedInventory(orderQuantity)
                 OrderRepo.addSellOrderToList(newOrder)
-
             }
         }
 
 
         fun matchOrders() {
-            val buyOrders = OrderRepo.buyList
-            if(buyOrders.isEmpty()) return
-            val currentBuyOrder = buyOrders.poll()
-            matchWithPerformanceSellOrders(currentBuyOrder)
-            matchWithNonPerformanceSellOrders(currentBuyOrder)
+            val buyOrder = OrderRepo.getBuyOrderToMatch() ?: return
 
-            if(currentBuyOrder.remainingOrderQuantity > 0) buyOrders.add(currentBuyOrder)
-            else matchOrders()
+            matchWithPerformanceSellOrders(buyOrder)
+            matchWithNonPerformanceSellOrders(buyOrder)
+
+            if (buyOrder.getRemainingQtyOfOrder() > 0)
+                OrderRepo.addBuyOrderToList(buyOrder)
+            else
+                matchOrders()
         }
 
         private fun matchWithPerformanceSellOrders(buyOrder: Order) {
@@ -109,10 +115,15 @@ class OrderServices {
                 val orderQuantity = findOrderQuantity(buyOrder, sellOrder)
                 val orderAmount = orderQuantity * orderExecutionPrice
 
-                UserRepo.updateSellerInventoryAndWallet(sellOrder, orderQuantity, orderExecutionPrice, isPerformanceESOP)
+                UserRepo.updateSellerInventoryAndWallet(
+                    sellOrder,
+                    orderQuantity,
+                    orderExecutionPrice,
+                    isPerformanceESOP
+                )
                 UserRepo.updateBuyerInventoryAndWallet(buyOrder, orderQuantity, orderExecutionPrice)
 
-                val orderFee = (orderAmount*DataStorage.COMMISSION_FEE_PERCENTAGE*0.01).roundToLong()
+                val orderFee = (orderAmount * DataStorage.COMMISSION_FEE_PERCENTAGE * 0.01).roundToLong()
                 DataStorage.TOTAL_FEE_COLLECTED = DataStorage.TOTAL_FEE_COLLECTED + BigInteger.valueOf(orderFee)
                 val orderExecutionLog =
                     OrderExecutionLogs(Util.generateOrderExecutionId(), orderExecutionPrice, orderQuantity)
