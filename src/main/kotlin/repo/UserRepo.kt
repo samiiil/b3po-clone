@@ -23,27 +23,19 @@ class UserRepo {
         }
 
 
-        fun updateSellerInventoryAndWallet(
-            sellOrder: Order,
-            orderQuantity: Long,
-            orderExecutionPrice: Long,
-            isPerformanceESOP: Boolean
-        ) {
+        fun updateSellerInventoryAndWallet(sellOrder: Order, orderQuantity: Long, orderExecutionPrice: Long, isPerformanceESOP: Boolean) {
             val seller = userList[sellOrder.userName]!!
             val orderAmount = orderQuantity * orderExecutionPrice
             seller.updateLockedInventory(orderQuantity, isPerformanceESOP)
             seller.addMoneyToWallet((orderAmount * (1 - DataStorage.COMMISSION_FEE_PERCENTAGE * 0.01)).roundToLong())
         }
 
-
-
         fun updateBuyerInventoryAndWallet(buyOrder: Order, orderQuantity: Long, orderExecutionPrice: Long) {
-            val buyer = UserRepo.userList[buyOrder.userName]!!
+            val buyer = userList[buyOrder.userName]!!
             val orderAmount = orderQuantity * orderExecutionPrice
             buyer.updateLockedMoney(orderAmount)
             buyer.addEsopToInventory(orderQuantity)
 
-            //Need to send difference back to free wallet when high buy and low sell are paired
             if (buyOrder.orderPrice > orderExecutionPrice) {
                 val amountToBeMovedFromLockedWalletToFreeWallet =
                     orderQuantity * (buyOrder.orderPrice - orderExecutionPrice)

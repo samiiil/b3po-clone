@@ -50,15 +50,15 @@ class OrderServices {
             val transactionAmount = orderQuantity * orderPrice
             user.moveFreeMoneyToLockedMoney(transactionAmount)
 
-            val newOrder = Order(user.username, Util.generateOrderId(), orderQuantity, orderPrice, "BUY")
+            val newOrder = Order(user.username, generateOrderId(), orderQuantity, orderPrice, "BUY")
             user.addOrderToUser(newOrder)
 
             OrderRepo.addBuyOrderToList(newOrder)
         }
 
-        fun placeSellOrder(user: User, orderQuantity: Long, orderPrice: Long, typeOfESOP: String) {
+        private fun placeSellOrder(user: User, orderQuantity: Long, orderPrice: Long, typeOfESOP: String) {
 
-            val newOrder = Order(user.username, Util.generateOrderId(), orderQuantity, orderPrice, "SELL")
+            val newOrder = Order(user.username, generateOrderId(), orderQuantity, orderPrice, "SELL")
             user.addOrderToUser(newOrder)
             if (typeOfESOP == "PERFORMANCE") {
 
@@ -73,7 +73,7 @@ class OrderServices {
         }
 
 
-        fun matchOrders() {
+        private fun matchOrders() {
             val buyOrder = OrderRepo.getBuyOrderToMatch() ?: return
 
             matchWithPerformanceSellOrders(buyOrder)
@@ -89,6 +89,7 @@ class OrderServices {
             val performanceSellOrders = OrderRepo.performanceSellList.iterator()
             while (performanceSellOrders.hasNext() && buyOrder.remainingOrderQuantity > 0) {
                 val currentPerformanceSellOrder = performanceSellOrders.next()
+                if (currentPerformanceSellOrder.orderPrice > buyOrder.orderPrice) break
                 processOrder(buyOrder, currentPerformanceSellOrder, true)
                 if (currentPerformanceSellOrder.remainingOrderQuantity == 0L)
                     performanceSellOrders.remove()
@@ -100,7 +101,6 @@ class OrderServices {
             while (buyOrder.remainingOrderQuantity > 0) {
 
                 val currentSellOrder = OrderRepo.getSellOrderToMatch() ?: break
-
                 if (currentSellOrder.orderPrice > buyOrder.orderPrice) break
 
                 processOrder(buyOrder, currentSellOrder, false)
@@ -111,33 +111,35 @@ class OrderServices {
         }
 
         private fun processOrder(buyOrder: Order, sellOrder: Order, isPerformanceESOP: Boolean) {
-            if (sellOrder.orderPrice <= buyOrder.orderPrice) {
-                val orderExecutionPrice = sellOrder.orderPrice
-                val orderQuantity = findOrderQuantity(buyOrder, sellOrder)
-                val orderAmount = orderQuantity * orderExecutionPrice
 
-                UserRepo.updateSellerInventoryAndWallet(
-                    sellOrder,
-                    orderQuantity,
-                    orderExecutionPrice,
-                    isPerformanceESOP
-                )
-                UserRepo.updateBuyerInventoryAndWallet(buyOrder, orderQuantity, orderExecutionPrice)
+            val orderExecutionPrice = sellOrder.orderPrice
+            val orderQuantity = findOrderQuantity(buyOrder, sellOrder)
+            val orderAmount = orderQuantity * orderExecutionPrice
 
-                val orderFee = (orderAmount * DataStorage.COMMISSION_FEE_PERCENTAGE * 0.01).roundToLong()
-                DataStorage.TOTAL_FEE_COLLECTED = DataStorage.TOTAL_FEE_COLLECTED + BigInteger.valueOf(orderFee)
-                val orderExecutionLog =
-                    OrderExecutionLogs(Util.generateOrderExecutionId(), orderExecutionPrice, orderQuantity)
-                sellOrder.addOrderExecutionLogs(orderExecutionLog)
-                buyOrder.addOrderExecutionLogs(orderExecutionLog)
-            }
+            UserRepo.updateSellerInventoryAndWallet(sellOrder, orderQuantity, orderExecutionPrice, isPerformanceESOP)
+            UserRepo.updateBuyerInventoryAndWallet(buyOrder, orderQuantity, orderExecutionPrice)
+
+            val orderFee = (orderAmount * DataStorage.COMMISSION_FEE_PERCENTAGE * 0.01).roundToLong()
+
+            DataStorage.addTransactionFee(orderFee.toBigInteger())
+
+            val orderExecutionLog = OrderExecutionLogs(generateOrderExecutionId(), orderExecutionPrice, orderQuantity)
+            sellOrder.addOrderExecutionLogs(orderExecutionLog)
+            buyOrder.addOrderExecutionLogs(orderExecutionLog)
         }
 
+        @Synchronized
+        private fun generateOrderId(): Long {
+            return DataStorage.orderId++
+        }
+
+        @Synchronized
+        private fun generateOrderExecutionId(): Long {
+            return DataStorage.orderExecutionId++
+        }
 
         private fun findOrderQuantity(buyOrder: Order, sellOrder: Order): Long {
             return min(buyOrder.remainingOrderQuantity, sellOrder.remainingOrderQuantity)
         }
-
-
     }
 }

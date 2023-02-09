@@ -12,16 +12,15 @@ class Order(
     var remainingOrderQuantity: Long = orderQuantity
 
     fun addOrderExecutionLogs(orderExecuted: OrderExecutionLogs) {
-        if (orderExecuted.orderExecutionQuantity == this.remainingOrderQuantity) {
+        if (orderExecuted.orderExecutionQuantity == this.remainingOrderQuantity)
             this.orderStatus = "Filled"
-        }
-        if (orderExecuted.orderExecutionQuantity < this.remainingOrderQuantity) {
+
+        if (orderExecuted.orderExecutionQuantity < this.remainingOrderQuantity)
             this.orderStatus = "Partially Filled"
-        }
+
         this.remainingOrderQuantity = this.remainingOrderQuantity - orderExecuted.orderExecutionQuantity
         orderExecutionLogs.add(orderExecuted)
     }
-
 
     fun getRemainingQtyOfOrder(): Long {
         return remainingOrderQuantity

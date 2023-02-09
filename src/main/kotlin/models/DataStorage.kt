@@ -18,5 +18,9 @@ class DataStorage {
         var TOTAL_FEE_COLLECTED: BigInteger = BigInteger.valueOf(0)
 
 
+        fun addTransactionFee(fee:BigInteger){
+            TOTAL_FEE_COLLECTED+=fee
+        }
+
     }
 }

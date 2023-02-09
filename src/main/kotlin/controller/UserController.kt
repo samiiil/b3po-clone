@@ -193,7 +193,6 @@ class UserController {
     @Get("/{userName}/orderHistory")
     fun orderHistory(userName: String): HttpResponse<*> {
         val errorMessages: ArrayList<String> = ArrayList()
-
         val response: Map<String, *>
 
         if (!Validations.validateUser(userName)) {
