@@ -39,13 +39,20 @@ object UserRepo {
         buyer.updateLockedMoney(orderAmount)
         buyer.addEsopToInventory(orderQuantity)
 
-        if (buyOrder.orderPrice > orderExecutionPrice) {
+        if (buyOrder.getOrderPrice() > orderExecutionPrice) {
             val amountToBeMovedFromLockedWalletToFreeWallet =
-                orderQuantity * (buyOrder.orderPrice - orderExecutionPrice)
+                orderQuantity * (buyOrder.getOrderPrice() - orderExecutionPrice)
             buyer.updateLockedMoney(amountToBeMovedFromLockedWalletToFreeWallet)
             buyer.addMoneyToWallet(amountToBeMovedFromLockedWalletToFreeWallet)
         }
     }
+
+    fun saveUser(user: User) {
+       userList[user.username] = user
+       registeredEmails.add(user.emailId)
+       registeredPhoneNumbers.add(user.phoneNumber)
+    }
+
 
 
 }

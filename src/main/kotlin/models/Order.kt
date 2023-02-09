@@ -2,9 +2,9 @@ package models
 
 class Order(
     val userName: String,
-    val orderId: Long,
+    private val orderId: Long,
     val orderQuantity: Long,
-    val orderPrice: Long,
+    private val orderPrice: Long,
     val orderType: String,
     var orderStatus: String = "Unfilled"
 ) {
@@ -16,6 +16,9 @@ class Order(
         return orderId
     }
 
+    fun getOrderPrice(): Long {
+        return orderPrice
+    }
     fun addOrderExecutionLogs(orderExecuted: OrderExecutionLogs) {
         if (orderExecuted.orderExecutionQuantity == this.remainingOrderQuantity)
             this.orderStatus = "Filled"

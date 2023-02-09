@@ -7,8 +7,9 @@ import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
 import models.*
 import repo.UserRepo
+import services.UserServices
 import services.Validations
-import services.saveUser
+
 
 @Controller("/user")
 class UserController {
@@ -31,7 +32,7 @@ class UserController {
         if (errorList.isEmpty()) {
             if (userName != null && firstName != null && lastName != null && phoneNumber != null && emailID != null) {
                 val user = User(userName, firstName, lastName, phoneNumber, emailID)
-                saveUser(user)
+                UserRepo.saveUser(user)
             }
         }
         if (errorList.isNotEmpty()) {
@@ -206,7 +207,8 @@ class UserController {
             response = mapOf("error" to errorMessages)
             return HttpResponse.status<Any>(HttpStatus.UNAUTHORIZED).body(response)
         }
-        response = UserRepo.userList[userName]!!.getOrderDetails()
+        val user=UserRepo.userList[userName]!!
+        response = UserServices.getOrderDetails(user)
         return HttpResponse.status<Any>(HttpStatus.OK).body(response)
     }
 }

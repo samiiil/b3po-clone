@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import repo.OrderRepo
 import repo.UserRepo
-import services.saveUser
+
 
 
 @MicronautTest
@@ -96,9 +96,9 @@ class UserControllerTest {
         val user1 = User(firstName = "user1", lastName = "user1", emailId = "user1@example.com", phoneNumber = "+911234567891", username = "user1")
         val user2 = User(firstName = "user2", lastName = "user2", emailId = "user2@example.com", phoneNumber = "+911234567892", username = "user2")
         val user3 = User(firstName = "user3", lastName = "user3", emailId = "user3@example.com", phoneNumber = "+911234567893", username = "user3")
-        saveUser(user1)
-        saveUser(user2)
-        saveUser(user3)
+        UserRepo.saveUser(user1)
+        UserRepo.saveUser(user2)
+        UserRepo.saveUser(user3)
         assertEquals(3, UserRepo.userList.size)
 
     }

@@ -16,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import repo.OrderRepo
 import repo.UserRepo
-import services.saveUser
 import java.math.BigInteger
 
 @MicronautTest
@@ -32,8 +31,8 @@ class TestFeeCollection {
         val seller = User("amy", "Amy", "Santiago", "9472919384", "amy@gmail.com") //Seller
         seller.addEsopToInventory(100, "NON-PERFORMANCE")
         seller.addEsopToInventory(100, "PERFORMANCE")
-        saveUser(buyer)
-        saveUser(seller)
+        UserRepo.saveUser(buyer)
+        UserRepo.saveUser(seller)
     }
 
     @AfterEach
@@ -66,8 +65,8 @@ class TestFeeCollection {
         val seller = User("amy", "Amy", "Santiago", "9472919384", "amy@gmail.com") //Seller
         seller.addEsopToInventory(100, "NON-PERFORMANCE")
         seller.addEsopToInventory(100, "PERFORMANCE")
-        saveUser(buyer)
-        saveUser(seller)
+        UserRepo.saveUser(buyer)
+        UserRepo.saveUser(seller)
 
 
 
@@ -88,8 +87,8 @@ class TestFeeCollection {
         val seller = User("amy", "Amy", "Santiago", "9472919384", "amy@gmail.com") //Seller
         seller.addEsopToInventory(100, "NON-PERFORMANCE")
         seller.addEsopToInventory(100, "PERFORMANCE")
-        saveUser(buyer)
-        saveUser(seller)
+        UserRepo.saveUser(buyer)
+        UserRepo.saveUser(seller)
 
         OrderServices.placeOrder(buyer, CreateOrderInput(1,"BUY",30))
         OrderServices.placeOrder(seller,CreateOrderInput(1,"SELL",30))

@@ -17,7 +17,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import repo.OrderRepo
 import repo.UserRepo
-import services.saveUser
 
 @MicronautTest
 class
@@ -55,7 +54,7 @@ WalletControllerTest {
     @BeforeEach
     fun setUp() {
         val user = User("user1", "Amy", "Santiago", "9952053438", "amy@gmail.com")
-        saveUser(user)
+        UserRepo.saveUser(user)
         UserRepo.userList["user1"]!!.addMoneyToWallet(100)
     }
 

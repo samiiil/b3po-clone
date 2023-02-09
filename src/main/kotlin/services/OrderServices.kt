@@ -83,7 +83,7 @@ object OrderServices {
             val performanceSellOrders = OrderRepo.performanceSellList.iterator()
             while (performanceSellOrders.hasNext() && buyOrder.remainingOrderQuantity > 0) {
                 val currentPerformanceSellOrder = performanceSellOrders.next()
-                if (currentPerformanceSellOrder.orderPrice > buyOrder.orderPrice) break
+                if (currentPerformanceSellOrder.getOrderPrice() > buyOrder.getOrderPrice()) break
                 processOrder(buyOrder, currentPerformanceSellOrder, true)
                 if (currentPerformanceSellOrder.remainingOrderQuantity == 0L)
                     performanceSellOrders.remove()
@@ -95,7 +95,7 @@ object OrderServices {
             while (buyOrder.remainingOrderQuantity > 0) {
 
                 val currentSellOrder = OrderRepo.getSellOrderToMatch() ?: break
-                if (currentSellOrder.orderPrice > buyOrder.orderPrice) break
+                if (currentSellOrder.getOrderPrice() > buyOrder.getOrderPrice()) break
 
                 processOrder(buyOrder, currentSellOrder, false)
 
@@ -106,7 +106,7 @@ object OrderServices {
 
         private fun processOrder(buyOrder: Order, sellOrder: Order, isPerformanceESOP: Boolean) {
 
-            val orderExecutionPrice = sellOrder.orderPrice
+            val orderExecutionPrice = sellOrder.getOrderPrice()
             val orderQuantity = findOrderQuantity(buyOrder, sellOrder)
             val orderAmount = orderQuantity * orderExecutionPrice
 

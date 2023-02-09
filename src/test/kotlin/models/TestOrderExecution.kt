@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import repo.OrderRepo
 import repo.UserRepo
-import services.saveUser
 import kotlin.math.roundToLong
 
 class TestOrderExecution {
@@ -19,8 +18,8 @@ class TestOrderExecution {
         seller.addEsopToInventory(100, "NON-PERFORMANCE")
         seller.addEsopToInventory(100, "PERFORMANCE")
 
-        saveUser(buyer)
-        saveUser(seller)
+        UserRepo.saveUser(buyer)
+        UserRepo.saveUser(seller)
     }
 
     @AfterEach
@@ -85,11 +84,11 @@ class TestOrderExecution {
 
 
         assertEquals("Unfilled", seller.orders[0].orderStatus)
-        assertEquals(10, seller.orders[0].orderPrice)
+        assertEquals(10, seller.orders[0].getOrderPrice())
         assertEquals("Filled", seller.orders[1].orderStatus)
-        assertEquals(5, seller.orders[1].orderPrice)
+        assertEquals(5, seller.orders[1].getOrderPrice())
         assertEquals("Filled", buyer.orders[0].orderStatus)
-        assertEquals(10, buyer.orders[0].orderPrice)
+        assertEquals(10, buyer.orders[0].getOrderPrice())
         assertEquals(10000-5, buyer.getFreeMoney())
     }
 
@@ -106,11 +105,11 @@ class TestOrderExecution {
 
 
         assertEquals("Unfilled", buyer.orders[0].orderStatus)
-        assertEquals(5, buyer.orders[0].orderPrice)
+        assertEquals(5, buyer.orders[0].getOrderPrice())
         assertEquals("Filled", buyer.orders[1].orderStatus)
-        assertEquals(10, buyer.orders[1].orderPrice)
+        assertEquals(10, buyer.orders[1].getOrderPrice())
         assertEquals("Filled", seller.orders[0].orderStatus)
-        assertEquals(5, seller.orders[0].orderPrice)
+        assertEquals(5, seller.orders[0].getOrderPrice())
     }
 
     @Test
@@ -126,11 +125,11 @@ class TestOrderExecution {
 
 
         assertEquals("Unfilled", seller.orders[0].orderStatus)
-        assertEquals(5, seller.orders[0].orderPrice)
+        assertEquals(5, seller.orders[0].getOrderPrice())
         assertEquals("Filled", seller.orders[1].orderStatus)
-        assertEquals(10, seller.orders[1].orderPrice)
+        assertEquals(10, seller.orders[1].getOrderPrice())
         assertEquals("Filled", buyer.orders[0].orderStatus)
-        assertEquals(10, buyer.orders[0].orderPrice)
+        assertEquals(10, buyer.orders[0].getOrderPrice())
         assertEquals(10000-10, buyer.getFreeMoney())
     }
 
@@ -165,10 +164,10 @@ class TestOrderExecution {
         assertEquals(10000-10, buyer.getFreeMoney())
         assertEquals(0,buyer.getLockedMoney())
         assertEquals("Filled", seller.orders[0].orderStatus)
-        assertEquals(10, seller.orders[0].orderPrice)
+        assertEquals(10, seller.orders[0].getOrderPrice())
         assertEquals("Unfilled", seller.orders[1].orderStatus)
-        assertEquals(5, seller.orders[1].orderPrice)
+        assertEquals(5, seller.orders[1].getOrderPrice())
         assertEquals("Filled", buyer.orders[0].orderStatus)
-        assertEquals(10, buyer.orders[0].orderPrice)
+        assertEquals(10, buyer.orders[0].getOrderPrice())
     }
 }

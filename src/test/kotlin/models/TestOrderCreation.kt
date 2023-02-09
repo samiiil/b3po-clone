@@ -8,9 +8,7 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import repo.OrderRepo
 import repo.UserRepo
-import services.saveUser
-
-
+import services.UserServices
 
 
 class TestOrderCreation {
@@ -80,7 +78,7 @@ class TestOrderCreation {
         assertEquals("Unfilled", OrderRepo.buyList.peek().orderStatus)
         assertEquals(1, OrderRepo.buyList.peek().orderQuantity)
         assertEquals("BUY", OrderRepo.buyList.peek().orderType)
-        assertEquals(100, OrderRepo.buyList.peek().orderPrice)
+        assertEquals(100, OrderRepo.buyList.peek().getOrderPrice())
         assertEquals(0, OrderRepo.buyList.peek().orderExecutionLogs.size)
     }
 
@@ -144,7 +142,7 @@ class TestOrderCreation {
         assertEquals("Unfilled", OrderRepo.sellList.peek().orderStatus)
         assertEquals(1, OrderRepo.sellList.peek().orderQuantity)
         assertEquals("SELL", OrderRepo.sellList.peek().orderType)
-        assertEquals(100, OrderRepo.sellList.peek().orderPrice)
+        assertEquals(100, OrderRepo.sellList.peek().getOrderPrice())
         assertEquals(0, OrderRepo.sellList.peek().orderExecutionLogs.size)
     }
 
@@ -214,7 +212,7 @@ class TestOrderCreation {
         assertEquals("Unfilled", OrderRepo.performanceSellList.peek().orderStatus)
         assertEquals(1, OrderRepo.performanceSellList.peek().orderQuantity)
         assertEquals("SELL", OrderRepo.performanceSellList.peek().orderType)
-        assertEquals(100, OrderRepo.performanceSellList.peek().orderPrice)
+        assertEquals(100, OrderRepo.performanceSellList.peek().getOrderPrice())
         assertEquals(0, OrderRepo.performanceSellList.peek().orderExecutionLogs.size)
     }
 
@@ -236,7 +234,7 @@ class TestOrderCreation {
     fun `order details is initially empty`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
         UserRepo.userList["user"]=user
-        val orderDetails = user.getOrderDetails()
+        val orderDetails = UserServices.getOrderDetails(user)
 
         assert(orderDetails.keys.contains("order_history"))
         assertEquals(0, orderDetails["order_history"]!!.size)
@@ -252,7 +250,7 @@ class TestOrderCreation {
         OrderServices.placeOrder(user, CreateOrderInput(1,"BUY",100))
 
 
-        val orderDetails = user.getOrderDetails()
+        val orderDetails = UserServices.getOrderDetails(user)
 
         assertEquals(1, orderDetails.size)
         assert(orderDetails.keys.contains("order_history"))
@@ -266,8 +264,8 @@ class TestOrderCreation {
     fun `order details for partially filled order is set correctly`(){
         val buyer = User(firstName = "user1", lastName = "user1", emailId = "user1@example.com", phoneNumber = "+911234567891", username = "user1")
         val seller = User(firstName = "user2", lastName = "user2", emailId = "user2@example.com", phoneNumber = "+911234567892", username = "user2")
-        saveUser(buyer)
-        saveUser(seller)
+        UserRepo.saveUser(buyer)
+        UserRepo.saveUser(seller)
         buyer.addMoneyToWallet(200)
         seller.addEsopToInventory(1)
         OrderServices.placeOrder(buyer, CreateOrderInput(2,"BUY",100))
@@ -276,7 +274,7 @@ class TestOrderCreation {
 
 
 
-        val orderDetails = buyer.getOrderDetails()
+        val orderDetails = UserServices.getOrderDetails(buyer)
 
         assertEquals(1, orderDetails.size)
         assert(orderDetails.keys.contains("order_history"))
@@ -290,8 +288,8 @@ class TestOrderCreation {
     fun `order details for fully filled order is set correctly`(){
         val buyer = User(firstName = "user1", lastName = "user1", emailId = "user1@example.com", phoneNumber = "+911234567891", username = "user1")
         val seller = User(firstName = "user2", lastName = "user2", emailId = "user2@example.com", phoneNumber = "+911234567892", username = "user2")
-        saveUser(buyer)
-        saveUser(seller)
+        UserRepo.saveUser(buyer)
+        UserRepo.saveUser(seller)
 
         buyer.addMoneyToWallet(200)
         seller.addEsopToInventory(1)
@@ -302,7 +300,7 @@ class TestOrderCreation {
 
 
 
-        val orderDetails = seller.getOrderDetails()
+        val orderDetails = UserServices.getOrderDetails(seller)
 
         assertEquals(1, orderDetails.size)
         assert(orderDetails.keys.contains("order_history"))
@@ -345,7 +343,7 @@ class TestOrderCreation {
         user.addMoneyToWallet(DataStorage.MAX_AMOUNT-10L)
         user.addEsopToInventory(1)
         val exception = assertThrows(ValidationException::class.java) {
-            OrderServices.placeOrder(user,CreateOrderInput(1, "SELL", 15))
+            OrderServices.placeOrder(user, CreateOrderInput(1, "SELL", 15))
         }
 
         val errors = exception.errorResponse.error
@@ -362,7 +360,8 @@ class TestOrderCreation {
         user.addEsopToInventory(DataStorage.MAX_QUANTITY-10L)
         user.addMoneyToWallet(150)
 
-        val exception = assertThrows(ValidationException::class.java){  OrderServices.placeOrder(user,CreateOrderInput(15, "BUY", 10))
+        val exception = assertThrows(ValidationException::class.java){  OrderServices.placeOrder(user,
+            CreateOrderInput(15, "BUY", 10))
         }
         val errors = exception.errorResponse.error
 

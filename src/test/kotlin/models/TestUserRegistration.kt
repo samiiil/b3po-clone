@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import repo.OrderRepo
 import repo.UserRepo
-import services.saveUser
+
 
 class TestUserRegistration {
     @AfterEach
@@ -23,7 +23,7 @@ class TestUserRegistration {
     @Test
     fun `can create new valid user`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        saveUser(user)
+        UserRepo.saveUser(user)
 
         assertEquals(1, UserRepo.userList.size)
         assertEquals(user, UserRepo.userList["user"])
@@ -34,9 +34,9 @@ class TestUserRegistration {
         val user1 = User(firstName = "user1", lastName = "user1", emailId = "user1@example.com", phoneNumber = "+911234567891", username = "user1")
         val user2 = User(firstName = "user2", lastName = "user2", emailId = "user2@example.com", phoneNumber = "+911234567892", username = "user2")
         val user3 = User(firstName = "user3", lastName = "user3", emailId = "user3@example.com", phoneNumber = "+911234567893", username = "user3")
-        saveUser(user1)
-        saveUser(user2)
-        saveUser(user3)
+        UserRepo.saveUser(user1)
+        UserRepo.saveUser(user2)
+        UserRepo.saveUser(user3)
 
         assertEquals(3, UserRepo.userList.size)
         assertEquals(user1, UserRepo.userList["user1"])
@@ -47,7 +47,7 @@ class TestUserRegistration {
     @Test
     fun `user email added to registered email list`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        saveUser(user)
+        UserRepo.saveUser(user)
 
         assertEquals(1, UserRepo.registeredEmails.size)
         assert(UserRepo.registeredEmails.contains("user@example.com"))
@@ -56,7 +56,7 @@ class TestUserRegistration {
     @Test
     fun `user phone number added to registered phone number list`(){
         val user = User(firstName = "user", lastName = "user", emailId = "user@example.com", phoneNumber = "+911234567890", username = "user")
-        saveUser(user)
+        UserRepo.saveUser(user)
 
         assertEquals(1, UserRepo.registeredEmails.size)
         assert(UserRepo.registeredPhoneNumbers.contains("+911234567890"))
