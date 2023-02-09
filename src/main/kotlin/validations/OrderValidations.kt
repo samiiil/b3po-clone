@@ -3,18 +3,18 @@ package validations
 import exception.ValidationException
 import models.DataStorage
 import models.ErrorResponse
+import models.User
 import repo.UserRepo
 import kotlin.math.ceil
 
 class OrderValidations {
 
     companion object {
-        fun throwExceptionIfInvalidBuyOrder(userName: String, orderQuantity: Long, orderPrice: Long) {
-            val user = UserRepo.getUser(userName)!!
+        fun throwExceptionIfInvalidBuyOrder(user:User, orderQuantity: Long, orderPrice: Long) {
             val errorList = ArrayList<String>()
             val transactionAmount = orderQuantity * orderPrice
 
-            if (!user.isInventoryWithInLimit(userName, orderQuantity))
+            if (!user.isInventoryWithInLimit(user, orderQuantity))
                 errorList.add("Inventory threshold will be exceeded")
 
             if (user.getFreeMoney() < transactionAmount)
@@ -25,13 +25,12 @@ class OrderValidations {
         }
 
         fun throwExceptionIfInvalidSellOrder(
-            userName: String,
+            user: User,
             typeOfEsop: String,
             orderQuantity: Long,
             orderPrice: Long
         ) {
             val errorList = ArrayList<String>()
-            val user = UserRepo.getUser(userName)!!
 
             val freeQuantity =
                 if (typeOfEsop == "NON-PERFORMANCE") user.getFreeInventory() else user.getFreePerformanceInventory()
@@ -47,7 +46,7 @@ class OrderValidations {
                 transactionAmount -= commisionFee
             }
 
-            if (!user.isAmountWithInLimit(userName, transactionAmount)) {
+            if (!user.isAmountWithInLimit(transactionAmount)) {
                 errorList.add("Wallet threshold will be exceeded")
                 throw ValidationException(ErrorResponse(errorList))
             }

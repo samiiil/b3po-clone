@@ -7,30 +7,19 @@ import models.User
 import repo.OrderRepo
 import repo.UserRepo
 import validations.OrderValidations
-import java.math.BigInteger
 import kotlin.math.min
 import kotlin.math.roundToLong
 
 class OrderServices {
     companion object {
-        fun placeOrder(
-            userName: String,
-            orderQuantity: Long,
-            orderType: String,
-            orderPrice: Long,
-            typeOfESOP: String = "NON-PERFORMANCE"
-        ): MutableMap<String, Any> {
-
-            val user = UserRepo.getUser(userName)!!
+        fun placeOrder(user: User, orderQuantity: Long, orderType: String, orderPrice: Long, typeOfESOP: String = "NON-PERFORMANCE"): MutableMap<String, Any> {
 
             if (orderType == "BUY") {
-                OrderValidations.throwExceptionIfInvalidBuyOrder(userName, orderQuantity, orderPrice)
-
+                OrderValidations.throwExceptionIfInvalidBuyOrder(user, orderQuantity, orderPrice)
                 placeBuyOrder(user, orderQuantity, orderPrice)
-
-            } else if (orderType == "SELL") {
-                OrderValidations.throwExceptionIfInvalidSellOrder(userName, typeOfESOP, orderQuantity, orderPrice)
-
+            }
+            else if (orderType == "SELL") {
+                OrderValidations.throwExceptionIfInvalidSellOrder(user, typeOfESOP, orderQuantity, orderPrice)
                 placeSellOrder(user, orderQuantity, orderPrice, typeOfESOP)
             }
 
@@ -45,7 +34,7 @@ class OrderServices {
         }
 
 
-        fun placeBuyOrder(user: User, orderQuantity: Long, orderPrice: Long) {
+        private fun placeBuyOrder(user: User, orderQuantity: Long, orderPrice: Long) {
 
             val transactionAmount = orderQuantity * orderPrice
             user.moveFreeMoneyToLockedMoney(transactionAmount)
@@ -58,7 +47,7 @@ class OrderServices {
 
         private fun placeSellOrder(user: User, orderQuantity: Long, orderPrice: Long, typeOfESOP: String) {
 
-            val newOrder = Order(user.username, generateOrderId(), orderQuantity, orderPrice, "SELL")
+            val newOrder = Order(user.getUserName(user), generateOrderId(), orderQuantity, orderPrice, "SELL")
             user.addOrderToUser(newOrder)
             if (typeOfESOP == "PERFORMANCE") {
 

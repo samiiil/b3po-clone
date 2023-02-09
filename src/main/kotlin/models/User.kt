@@ -12,6 +12,9 @@ class User(
     private val account: Account = Account()
     val orders: ArrayList<Order> = ArrayList()
 
+    fun getUserName(user: User): String {
+        return user.username
+    }
 
     fun getOrderDetails(): Map<String, ArrayList<Map<String, Any>>> {
         if (orders.size == 0) {
@@ -37,11 +40,19 @@ class User(
             } else {
                 if (order.orderStatus == "Partially Filled") {
                     val partiallyFilledOrderExecutionLogs = ArrayList<Map<String, Any>>()
+                    val prices= mutableMapOf<Long,MutableMap<String,Long>>()
+
                     order.orderExecutionLogs.forEach {
-                        val currentOrderExecutionLogs = mutableMapOf<String, Any>()
-                        currentOrderExecutionLogs["price"] = it.orderExecutionPrice
-                        currentOrderExecutionLogs["quantity"] = it.orderExecutionQuantity
-                        partiallyFilledOrderExecutionLogs.add(currentOrderExecutionLogs)
+                        val currentOrderExecutionLogs = mutableMapOf<String, Long>()
+                        if(prices.containsKey(it.orderExecutionPrice)){
+                            prices[it.orderExecutionPrice]!!["quantity"] = prices[it.orderExecutionPrice]!!["quantity"]!! + it.orderExecutionQuantity
+                        }
+                        else {
+                            currentOrderExecutionLogs["price"] = it.orderExecutionPrice
+                            currentOrderExecutionLogs["quantity"] = it.orderExecutionQuantity
+                            prices[it.orderExecutionPrice]=currentOrderExecutionLogs
+                            partiallyFilledOrderExecutionLogs.add(currentOrderExecutionLogs)
+                        }
                     }
                     currentOrderDetails["partially_filled"] = partiallyFilledOrderExecutionLogs
 
@@ -145,14 +156,12 @@ class User(
         return "Success"
     }
 
-    fun isInventoryWithInLimit(userName: String, orderQuantity: Long): Boolean {
-        val user = UserRepo.userList[userName]!!
+    fun isInventoryWithInLimit(user:User, orderQuantity: Long): Boolean {
         return (user.getFreeInventory() + user.getLockedInventory() + orderQuantity <= DataStorage.MAX_QUANTITY)
     }
 
-    fun isAmountWithInLimit(userName: String, orderAmount: Long): Boolean {
-        val user = UserRepo.userList[userName]!!
-        return (user.getFreeMoney() + user.getLockedMoney() + orderAmount <= DataStorage.MAX_AMOUNT)
+    fun isAmountWithInLimit(orderAmount: Long): Boolean {
+        return (getFreeMoney() + getLockedMoney() + orderAmount <= DataStorage.MAX_AMOUNT)
 
     }
 
