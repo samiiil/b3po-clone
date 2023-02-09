@@ -6,7 +6,7 @@ import models.User
 import kotlin.math.roundToLong
 
 object UserRepo {
-    
+
     val userList: HashMap<String, User> = HashMap()
     val registeredEmails = mutableSetOf<String>()
     val registeredPhoneNumbers = mutableSetOf<String>()

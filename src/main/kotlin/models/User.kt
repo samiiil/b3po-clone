@@ -29,54 +29,53 @@ class User(
             currentOrderDetails["type"] = order.orderType
             currentOrderDetails["price"] = order.orderPrice
 
+            when (order.orderStatus) {
 
-            if (order.orderStatus == "Unfilled") {
-                val unfilledOrderExecutionLogs = ArrayList<Map<String, Any>>()
-                val currentOrderExecutionLogs = mutableMapOf<String, Any>()
-                currentOrderExecutionLogs["price"] = order.orderPrice
-                currentOrderExecutionLogs["quantity"] = order.orderQuantity
-                unfilledOrderExecutionLogs.add(currentOrderExecutionLogs)
-                currentOrderDetails["unfilled"] = unfilledOrderExecutionLogs
-            } else {
-                if (order.orderStatus == "Partially Filled") {
-                    val partiallyFilledOrderExecutionLogs = ArrayList<Map<String, Any>>()
-                    val prices= mutableMapOf<Long,MutableMap<String,Long>>()
+                "Unfilled" -> {
+                    currentOrderDetails["unfilled"] = getOrderHistoryOfUnfilledOrder(order)
+                }
 
-                    order.orderExecutionLogs.forEach {
-                        val currentOrderExecutionLogs = mutableMapOf<String, Long>()
-                        if(prices.containsKey(it.orderExecutionPrice)){
-                            prices[it.orderExecutionPrice]!!["quantity"] = prices[it.orderExecutionPrice]!!["quantity"]!! + it.orderExecutionQuantity
-                        }
-                        else {
-                            currentOrderExecutionLogs["price"] = it.orderExecutionPrice
-                            currentOrderExecutionLogs["quantity"] = it.orderExecutionQuantity
-                            prices[it.orderExecutionPrice]=currentOrderExecutionLogs
-                            partiallyFilledOrderExecutionLogs.add(currentOrderExecutionLogs)
-                        }
-                    }
-                    currentOrderDetails["partially_filled"] = partiallyFilledOrderExecutionLogs
+                "Partially Filled" -> {
+                    currentOrderDetails["partially_filled"] = getAllCompletedTransactionsOfOrder(order)
+                    currentOrderDetails["unfilled"] = getOrderHistoryOfUnfilledOrder(order)
+                }
 
-                    val unfilledOrderExecutionLogs = ArrayList<Map<String, Any>>()
-                    val currentOrderExecutionLogs = mutableMapOf<String, Any>()
-                    currentOrderExecutionLogs["price"] = order.orderPrice
-                    currentOrderExecutionLogs["quantity"] = order.remainingOrderQuantity
-                    unfilledOrderExecutionLogs.add(currentOrderExecutionLogs)
-                    currentOrderDetails["unfilled"] = unfilledOrderExecutionLogs
-                } else if (order.orderStatus == "Filled") {
-                    val filledOrderExecutionLogs = ArrayList<Map<String, Any>>()
-                    order.orderExecutionLogs.forEach {
-                        val currentOrderExecutionLogs = mutableMapOf<String, Any>()
-                        currentOrderExecutionLogs["price"] = it.orderExecutionPrice
-                        currentOrderExecutionLogs["quantity"] = it.orderExecutionQuantity
-                        filledOrderExecutionLogs.add(currentOrderExecutionLogs)
-                    }
-                    currentOrderDetails["filled"] = filledOrderExecutionLogs
+                "Filled" -> {
+                    currentOrderDetails["filled"] = getAllCompletedTransactionsOfOrder(order)
                 }
             }
             orderDetails.add(currentOrderDetails)
         }
-
         return mapOf("order_history" to orderDetails)
+    }
+
+    private fun getAllCompletedTransactionsOfOrder(order: Order): ArrayList<Map<String, Any>> {
+        val partiallyFilledOrderExecutionLogs = ArrayList<Map<String, Any>>()
+        val prices = mutableMapOf<Long, MutableMap<String, Long>>()
+
+        order.orderExecutionLogs.forEach {
+            val currentOrderExecutionLogs = mutableMapOf<String, Long>()
+            if (prices.containsKey(it.orderExecutionPrice)) {
+                prices[it.orderExecutionPrice]!!["quantity"] =
+                    prices[it.orderExecutionPrice]!!["quantity"]!! + it.orderExecutionQuantity
+            } else {
+                currentOrderExecutionLogs["price"] = it.orderExecutionPrice
+                currentOrderExecutionLogs["quantity"] = it.orderExecutionQuantity
+                prices[it.orderExecutionPrice] = currentOrderExecutionLogs
+                partiallyFilledOrderExecutionLogs.add(currentOrderExecutionLogs)
+            }
+        }
+        return partiallyFilledOrderExecutionLogs
+    }
+
+
+    private fun getOrderHistoryOfUnfilledOrder(order: Order): ArrayList<Map<String, Any>> {
+        val unfilledOrderExecutionLogs = ArrayList<Map<String, Any>>()
+        val currentOrderExecutionLogs = mutableMapOf<String, Any>()
+        currentOrderExecutionLogs["price"] = order.orderPrice
+        currentOrderExecutionLogs["quantity"] = order.remainingOrderQuantity
+        unfilledOrderExecutionLogs.add(currentOrderExecutionLogs)
+        return unfilledOrderExecutionLogs
     }
 
     fun addMoneyToWallet(amountToBeAdded: Long) {
@@ -156,7 +155,7 @@ class User(
         return "Success"
     }
 
-    fun isInventoryWithInLimit(user:User, orderQuantity: Long): Boolean {
+    fun isInventoryWithInLimit(user: User, orderQuantity: Long): Boolean {
         return (user.getFreeInventory() + user.getLockedInventory() + orderQuantity <= DataStorage.MAX_QUANTITY)
     }
 
@@ -171,7 +170,7 @@ class User(
 
     }
 
-    fun addOrderToUser (order: Order){
+    fun addOrderToUser(order: Order) {
         orders.add(order)
     }
 

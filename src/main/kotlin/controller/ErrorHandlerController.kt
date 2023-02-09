@@ -8,7 +8,6 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Error
-import io.micronaut.json.tree.JsonObject
 import io.micronaut.web.router.exceptions.UnsatisfiedBodyRouteException
 import models.ErrorResponse
 
@@ -30,9 +29,10 @@ class ErrorHandlerController {
     }
 
     @Error(global = true, exception = UserNotFoundException::class)
-    fun handleUserNotFound(exception: UserNotFoundException): HttpResponse<ErrorResponse>{
+    fun handleUserNotFound(exception: UserNotFoundException): HttpResponse<ErrorResponse> {
         return HttpResponse.notFound(exception.errorResponse)
     }
+
     @Error(global = true, status = HttpStatus.METHOD_NOT_ALLOWED)
     fun handleWrongHttpMethod(request: HttpRequest<*>): HttpResponse<ErrorResponse> {
         return HttpResponse.notAllowed<ErrorResponse>()

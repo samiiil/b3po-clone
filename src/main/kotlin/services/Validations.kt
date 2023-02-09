@@ -1,29 +1,10 @@
 package services
 
 import constants.PhoneNumber
-import models.DataStorage
-import models.RegisterInput
 import repo.UserRepo
 
 class Validations {
     companion object {
-        fun validateRegisterInput(body: RegisterInput): ArrayList<String> {
-            val errorList = arrayListOf<String>()
-
-            val firstName: String? = body.firstName?.trim()
-            val lastName: String? = body.lastName?.trim()
-            val phoneNumber: String? = body.phoneNumber?.trim()
-            val email: String? = body.emailID?.trim()
-            val username: String? = body.userName?.trim()
-
-            errorList.addAll(validateFirstName(firstName))
-            errorList.addAll(validateLastName(lastName))
-            errorList.addAll(validatePhoneNumber(phoneNumber))
-            errorList.addAll(validateEmailIds(email))
-            errorList.addAll(validateUserName(username))
-
-            return errorList
-        }
 
         fun validateFirstName(name: String?): ArrayList<String> {
             val errorList = arrayListOf<String>()
@@ -145,30 +126,30 @@ class Validations {
                 errorList.add(PhoneNumber.ALREADY_EXISTS_ERROR_MESSAGE)
                 return errorList
             }
-            if (phoneNumber.length < 10 || phoneNumber.length>14) {
+            if (phoneNumber.length < 10 || phoneNumber.length > 14) {
                 errorList.add(PhoneNumber.INVALID_LENGTH_ERROR_MESSAGE)
                 return errorList
             }
-            val code=countryCode(phoneNumber)
-            if(code.length==1 && code[0]!='0' ){
+            val code = countryCode(phoneNumber)
+            if (code.length == 1 && code[0] != '0') {
                 errorList.add(PhoneNumber.TRUNK_ERROR_MESSAGE)
                 return errorList
             }
-            if(code.isNotEmpty() && !code.matches(Regex("\\+?\\d*"))){
+            if (code.isNotEmpty() && !code.matches(Regex("\\+?\\d*"))) {
                 errorList.add(PhoneNumber.COUNTRY_CODE_ERROR_MESSAGE)
                 return errorList
             }
-            val number=phoneNumber.subSequence(code.length,phoneNumber.length)
-            if(!number.matches(Regex("\\d*"))){
+            val number = phoneNumber.subSequence(code.length, phoneNumber.length)
+            if (!number.matches(Regex("\\d*"))) {
                 errorList.add(PhoneNumber.NON_NUMERICAL_ERROR_MESSAGE)
             }
             return errorList
         }
 
         private fun countryCode(phoneNumber: String): String {
-            if (phoneNumber.length == 10 || (phoneNumber.length==11 && phoneNumber[0]=='0'))
+            if (phoneNumber.length == 10 || (phoneNumber.length == 11 && phoneNumber[0] == '0'))
                 return ""
-            return phoneNumber.subSequence(0,phoneNumber.length-10).toString()
+            return phoneNumber.subSequence(0, phoneNumber.length - 10).toString()
 
 
         }
