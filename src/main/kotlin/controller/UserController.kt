@@ -207,7 +207,7 @@ class UserController {
             response = mapOf("error" to errorMessages)
             return HttpResponse.status<Any>(HttpStatus.UNAUTHORIZED).body(response)
         }
-        val user=UserRepo.userList[userName]!!
+        val user = UserRepo.userList[userName]!!
         response = UserServices.getOrderDetails(user)
         return HttpResponse.status<Any>(HttpStatus.OK).body(response)
     }
